@@ -1,0 +1,5 @@
+#binaries
+bin/*.o
+
+#main
+main
