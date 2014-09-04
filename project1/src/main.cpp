@@ -1,4 +1,5 @@
 #include "SingleItemStreams.h"
+#include "FStreams.h"
 #include <iostream>
 #include <cstdio>
 
@@ -31,6 +32,10 @@ void test(AbstractInputStream<int>* in, AbstractOutputStream<int>* out, string t
 int main(int argc, char** argv) {
 	SingleItemOutputStream<int> out("data/foo");
 	SingleItemInputStream<int> in("data/foo");
-
     test(&in, &out, "SingleItems");
+    //---------------------//
+    FInputStream<int> fin("data/bar");
+    FOutputStream<int> fout("data/bar");
+    test(&fin, &fout, "FStreams");
+
 }
