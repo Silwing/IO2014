@@ -1,8 +1,9 @@
 #binaries
-bin/*.o
+bin/
 
 #main
 main
+main.exe
 
 #data
-data/*
+data/
