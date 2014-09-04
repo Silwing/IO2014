@@ -3,6 +3,11 @@
 #include <cstdio>
 #include <fcntl.h>
 
+
+#if defined(_WIN32) || defined(WIN32)
+#define OS_WIN
+#endif
+
 template<typename E>
 SingleItemInputStream<E>::SingleItemInputStream(string file) {
 	this->file = file;
@@ -44,7 +49,13 @@ SingleItemOutputStream<E>::~SingleItemOutputStream() {
 
 template<typename E>
 void SingleItemOutputStream<E>::create() {
+
+	#ifdef OS_WIN
+	fd = ::open(file.c_str(), O_WRONLY | O_CREAT);
+	#else
 	fd = ::open(file.c_str(), O_WRONLY | O_CREAT, S_IRUSR | S_IWUSR);
+	#endif
+
 };
 
 template<typename E>

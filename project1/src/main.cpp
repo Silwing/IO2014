@@ -2,6 +2,10 @@
 #include <iostream>
 #include <cstdio>
 
+#if defined(_WIN32) || defined(WIN32)
+#define OS_WIN
+#endif
+
 int main(int argc, char** argv) {
 
 	SingleItemOutputStream<int> out("data/foo");
