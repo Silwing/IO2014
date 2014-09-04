@@ -1,9 +1,12 @@
 #pragma once
 
-template <class E> class AbstractOutputStream  {
+template <typename E>
+class AbstractOutputStream  {
 public:
-    AbstractOutputStream();
-    ~AbstractOutputStream();
+
+    virtual ~AbstractOutputStream() {
+
+	}
 
 	virtual void create() = 0; 
 	virtual void close() = 0; 

@@ -3,7 +3,7 @@ CFLAGS= -c -Iinc -Wall
 LFLAGS= -lstdc++
 
 SRC_DIR=src
-SRC_FILES=  Test.cpp        \
+SRC_FILES=  SingleItemStreams.cpp       \
             main.cpp
                     
 SRC=$(addprefix $(SRC_DIR)/,$(SRC_FILES))

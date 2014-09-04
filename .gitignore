@@ -3,3 +3,6 @@ bin/*.o
 
 #main
 main
+
+#data
+data/*
