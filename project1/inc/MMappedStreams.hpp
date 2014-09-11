@@ -21,6 +21,7 @@ class MMappedInputStream : public AbstractInputStream<E> {
 	
 	public:
 		MMappedInputStream(string file, size_t size);
+		MMappedInputStream();
 		~MMappedInputStream();
 		
 		void open();
