@@ -19,6 +19,7 @@ private:
 
 public:
     BufferedInputStream(string file, int size);
+    BufferedInputStream();
     ~BufferedInputStream();
 
     void open();

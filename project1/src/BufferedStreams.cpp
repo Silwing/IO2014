@@ -16,6 +16,11 @@ BufferedInputStream<E>::~BufferedInputStream() {
 };
 
 template <typename E>
+BufferedInputStream<E>::BufferedInputStream() {
+    
+}
+
+template <typename E>
 void BufferedInputStream<E>::open() {
 	fd = ::open(file.c_str(), O_RDONLY);
 	//TODO: what if file does not exists?

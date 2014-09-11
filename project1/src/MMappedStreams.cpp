@@ -17,6 +17,11 @@ MMappedInputStream<E>::MMappedInputStream(string file, size_t size) {
 }
 
 template<typename E>
+MMappedInputStream<E>::MMappedInputStream() {
+	
+}
+
+template<typename E>
 MMappedInputStream<E>::~MMappedInputStream() {
 }
 
