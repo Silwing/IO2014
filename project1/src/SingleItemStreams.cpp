@@ -53,7 +53,7 @@ void SingleItemOutputStream<E>::create() {
 	#ifdef OS_WIN
 	fd = ::open(file.c_str(), O_WRONLY | O_CREAT);
 	#else
-	fd = ::open(file.c_str(), O_WRONLY | O_CREAT, S_IRUSR | S_IWUSR);
+	fd = ::open(file.c_str(), O_WRONLY | O_CREAT | O_TRUNC, S_IRUSR | S_IWUSR);
 	#endif
 
 };

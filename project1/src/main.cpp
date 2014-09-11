@@ -41,28 +41,29 @@ int main(int argc, char** argv) {
     /* SingleStreams */
 	SingleItemOutputStream<int> out("data/foo");
 	SingleItemInputStream<int> in("data/foo");
-	//test(&in, &out, "SingleItems");
+	test(&in, &out, "SingleItems");
     
     /* FStreams */
     FInputStream<int> fin("data/foo");
     FOutputStream<int> fout("data/foo");
-    //test(&fin, &fout, "FStreams");
+    test(&fin, &fout, "FStreams");
 
     /* BufferedStreams */
     BufferedInputStream<int> bin("data/foo", 512);
     BufferedOutputStream<int> bout("data/foo", 1024);
-    //test(&bin, &bout, "BStreams");
+    test(&bin, &bout, "BStreams");
 
 	/* MMappedStreams */
+	MMappedOutputStream<int> mout("data/foo", 1024);
 	MMappedInputStream<int> min("data/foo", 1024);
+	test(&min, &mout, "MMappedStreams");
 
     /* Combos */
-    test(&min, &out, "Stream -> MMappedStream");
+    test(&in, &fout, "Streams -> FStream");
+    test(&fin, &out, "FStreams -> Streams");
+    test(&bin, &fout, "FStreams -> BufferedStreams");
+    test(&fin, &bout, "BufferedStreams -> FStream");
+    test(&bin, &mout, "BufferedStreams -> MMappedStreams");
+    test(&min, &bout, "MMappedStreams -> BufferedOut");
     
-    /**
-     * test(&in, &fout, "Streams -> FStream");
-     * test(&fin, &out, "FStreams -> Streams");
-     * test(&bin, &fout, "FStreams -> BufferedStreams");
-     * test(&fin, &bout, "BufferedStreams -> FStream");
-     **/
 }

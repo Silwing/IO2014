@@ -31,6 +31,14 @@ class MMappedInputStream : public AbstractInputStream<E> {
 template <typename E>
 class MMappedOutputStream : public AbstractOutputStream<E> {
 	private:
+		size_t size;
+		string file;
+		int fd;
+		off_t fdOffset;
+		int bufferOffset;
+		E* buffer;
+	
+		void mapNextChunk();
 	
 	public:
 		MMappedOutputStream(string file, int size);
