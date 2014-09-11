@@ -1,5 +1,5 @@
 CXX=clang
-CFLAGS= -c -Iinc -Wall -std=c++11
+CFLAGS= -c -Iinc -Wall -std=c++0x
 LFLAGS= -lstdc++
 
 SRC_DIR=src
@@ -7,6 +7,7 @@ SRC_FILES=  SingleItemStreams.cpp       \
             FStreams.cpp                \
             BufferedStreams.cpp         \
             MMappedStreams.cpp			\
+            DWayMergeSorter.cpp			\
             main.cpp					\
             tests/streamtests.cpp
                     

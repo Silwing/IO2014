@@ -11,16 +11,18 @@
 template<typename E>
 SingleItemInputStream<E>::SingleItemInputStream(string file) {
 	this->file = file;
+	fd = 0;
 };
 
 template<typename E>
 SingleItemInputStream<E>::SingleItemInputStream() {
-
+	//default constructors for arrays
 }
 
 template<typename E>
 SingleItemInputStream<E>::~SingleItemInputStream() {
-
+	if (fd != 0)
+		::close(fd);
 }
 
 template<typename E>
@@ -50,7 +52,7 @@ SingleItemOutputStream<E>::SingleItemOutputStream(string file) {
 
 template<typename E>
 SingleItemOutputStream<E>::SingleItemOutputStream() {
-	
+	//default contructor for array
 }
 
 template<typename E>
