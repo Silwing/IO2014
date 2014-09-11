@@ -1,4 +1,4 @@
-#include "FStreams.h"
+#include "FStreams.hpp"
 #include <unistd.h>
 
 #if defined(_WIN32) || defined(WIN32)

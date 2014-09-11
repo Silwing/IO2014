@@ -1,7 +1,7 @@
 #pragma once
 
-#include "AbstractInputStream.h"
-#include "AbstractOutputStream.h"
+#include "AbstractInputStream.hpp"
+#include "AbstractOutputStream.hpp"
 #include <string>
 
 using namespace std;

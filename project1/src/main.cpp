@@ -1,6 +1,7 @@
-#include "SingleItemStreams.h"
-#include "FStreams.h"
-#include "BufferedStreams.h"
+#include "SingleItemStreams.hpp"
+#include "FStreams.hpp"
+#include "BufferedStreams.hpp"
+#include "MMappedStreams.hpp"
 #include <iostream>
 #include <cstdio>
 
@@ -9,21 +10,22 @@
 #endif
 
 void test(AbstractInputStream<int>* in, AbstractOutputStream<int>* out, string testName) {
-    int zize = 1000000;
+    int zize = 2048;
     out->create();
 	for (int i = 0; i < zize; i++) {
         out->write(i);
     }
     out->close();
-
+    
 	in->open();
     for (int i = 0; i < zize; i++) {
         if (in->endOfStream()) {
             printf("%s failed with endOfStream at %d\n", testName.c_str(), i);
             return;
         }
-        if (i != in->readNext()) {
-            printf("%s failed at element %d\n", testName.c_str(), i);
+		int j = in->readNext();
+        if (i != j) {
+            printf("%s failed at element %d. Got %d\n", testName.c_str(), i, j);
             return;
         }
     }
@@ -35,25 +37,32 @@ void test(AbstractInputStream<int>* in, AbstractOutputStream<int>* out, string t
 }
 
 int main(int argc, char** argv) {
+	
     /* SingleStreams */
 	SingleItemOutputStream<int> out("data/foo");
 	SingleItemInputStream<int> in("data/foo");
-    test(&in, &out, "SingleItems");
+	//test(&in, &out, "SingleItems");
     
     /* FStreams */
     FInputStream<int> fin("data/foo");
     FOutputStream<int> fout("data/foo");
-    test(&fin, &fout, "FStreams");
+    //test(&fin, &fout, "FStreams");
 
     /* BufferedStreams */
     BufferedInputStream<int> bin("data/foo", 512);
     BufferedOutputStream<int> bout("data/foo", 1024);
-    test(&bin, &bout, "BStreams");
+    //test(&bin, &bout, "BStreams");
 
+	/* MMappedStreams */
+	MMappedInputStream<int> min("data/foo", 1024);
 
     /* Combos */
-    test(&in, &fout, "Streams -> FStream");
-    test(&fin, &out, "FStreams -> Streams");
-    test(&bin, &fout, "FStreams -> BufferedStreams");
-    test(&fin, &bout, "BufferedStreams -> FStream");
+    test(&min, &out, "Stream -> MMappedStream");
+    
+    /**
+     * test(&in, &fout, "Streams -> FStream");
+     * test(&fin, &out, "FStreams -> Streams");
+     * test(&bin, &fout, "FStreams -> BufferedStreams");
+     * test(&fin, &bout, "BufferedStreams -> FStream");
+     **/
 }
