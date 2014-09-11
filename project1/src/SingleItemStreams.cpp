@@ -14,6 +14,11 @@ SingleItemInputStream<E>::SingleItemInputStream(string file) {
 };
 
 template<typename E>
+SingleItemInputStream<E>::SingleItemInputStream() {
+
+}
+
+template<typename E>
 SingleItemInputStream<E>::~SingleItemInputStream() {
 
 }
@@ -42,6 +47,11 @@ template<typename E>
 SingleItemOutputStream<E>::SingleItemOutputStream(string file) {
 	this->file = file;
 };
+
+template<typename E>
+SingleItemOutputStream<E>::SingleItemOutputStream() {
+	
+}
 
 template<typename E>
 SingleItemOutputStream<E>::~SingleItemOutputStream() {

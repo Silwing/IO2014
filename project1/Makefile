@@ -7,7 +7,8 @@ SRC_FILES=  SingleItemStreams.cpp       \
             FStreams.cpp                \
             BufferedStreams.cpp         \
             MMappedStreams.cpp			\
-            main.cpp
+            main.cpp					\
+            tests/streamtests.cpp
                     
 SRC=$(addprefix $(SRC_DIR)/,$(SRC_FILES))
 

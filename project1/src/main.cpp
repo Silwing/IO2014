@@ -2,8 +2,10 @@
 #include "FStreams.hpp"
 #include "BufferedStreams.hpp"
 #include "MMappedStreams.hpp"
+#include "streamtests.hpp"
 #include <iostream>
 #include <cstdio>
+
 
 #if defined(_WIN32) || defined(WIN32)
 #define OS_WIN
@@ -37,7 +39,7 @@ void test(AbstractInputStream<int>* in, AbstractOutputStream<int>* out, string t
 }
 
 int main(int argc, char** argv) {
-	
+    bool t = true; 
     /* SingleStreams */
 	SingleItemOutputStream<int> out("data/foo");
 	SingleItemInputStream<int> in("data/foo");
@@ -59,6 +61,10 @@ int main(int argc, char** argv) {
     /* Combos */
     test(&min, &out, "Stream -> MMappedStream");
     
+    if (t) {
+        start(); 
+    }
+
     /**
      * test(&in, &fout, "Streams -> FStream");
      * test(&fin, &out, "FStreams -> Streams");
