@@ -34,7 +34,7 @@ void test(AbstractInputStream<int>* in, AbstractOutputStream<int>* out, string t
     if (!in->endOfStream()) {
         printf("%s failed at endOfStream\n", testName.c_str());
     } else {
-        printf("%s succeed\n", testName.c_str());
+    //    printf("%s succeed\n", testName.c_str());
     }
 }
 

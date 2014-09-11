@@ -6,6 +6,9 @@
 #include <cstdio>
 #include <string>
 #include <sstream>
+#include <chrono>
+#include <thread>
+
 
 template<typename IN, typename OUT>
 void test(IN* in, OUT* out, int k, int n, string testName) {
@@ -15,15 +18,19 @@ void test(IN* in, OUT* out, int k, int n, string testName) {
     for (int l=0; l<k; l++) {
         out[l]->create();
     }
+    auto t1 = std::chrono::high_resolution_clock::now(); 
     for (int j=0; j<n; j++) {
         for (int i=0; i<k; i++) {
             out[i]->write(j); 
         }
     }
+    auto t2 = std::chrono::high_resolution_clock::now(); 
+    std::cout << testName << "," << n << "," << k << "," << std::chrono::duration_cast<std::chrono::milliseconds>(t2-t1).count();
     for (int l=0; l<k; l++) {
         out[l]->close();
         in[l]->open();
     }
+    t1 = std::chrono::high_resolution_clock::now(); 
     for (int j=0; j<n; j++) {
         for (int i=0; i<k; i++) {
             int a = in[i]->readNext();
@@ -33,15 +40,18 @@ void test(IN* in, OUT* out, int k, int n, string testName) {
             } 
         }
     }
+    t2 = std::chrono::high_resolution_clock::now(); 
+    std::cout << "," << std::chrono::duration_cast<std::chrono::milliseconds>(t2-t1).count() << endl;
     for (int i=0; i<k; i++) {
         if(!in[i]->endOfStream()) {
             std::cout << "Failed endOfStream at stream " << i << endl;
         }
     }
-    std::cout << testName << " finished" << endl;
+    //std::cout << testName << " finished" << endl;
 }
 
 void start() {
+    std::cout << "type,n,k,out,in" << endl;
     int k = 8; int n = 100000; int b = 1024;
     SingleItemInputStream<int>* siis[k];
     SingleItemOutputStream<int>* sios[k];
@@ -52,7 +62,7 @@ void start() {
         siis[i] = new SingleItemInputStream<int>(name);
         sios[i] = new SingleItemOutputStream<int>(name);
     }
-    test(siis, sios, k, n, "Test SI");
+    test(siis, sios, k, n, "SI");
 
 
     FInputStream<int>* fis[k];
@@ -64,7 +74,7 @@ void start() {
         fis[i] = new FInputStream<int>(name);
         fos[i] = new FOutputStream<int>(name);
     }
-    test(fis, fos, k, n, "Test F");
+    test(fis, fos, k, n, "FS");
 
     BufferedInputStream<int>* bis[k];
     BufferedOutputStream<int>* bos[k];
@@ -75,7 +85,7 @@ void start() {
         bis[i] = new BufferedInputStream<int>(name, b);
         bos[i] = new BufferedOutputStream<int>(name, b);
     }
-    test(bis, bos, k, n, "Test Buf");
+    test(bis, bos, k, n, "BF");
 
     MMappedInputStream<int>* mmis[k];
     MMappedOutputStream<int>* mmos[k];
@@ -86,6 +96,6 @@ void start() {
         mmis[i] = new MMappedInputStream<int>(name, b);
         mmos[i] = new MMappedOutputStream<int>(name, b);
     }
-    test(mmis, mmos, k, n, "Test MM");
+    test(mmis, mmos, k, n, "MM");
 
 }
