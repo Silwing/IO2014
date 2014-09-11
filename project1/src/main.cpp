@@ -2,12 +2,16 @@
 #include "FStreams.hpp"
 #include "BufferedStreams.hpp"
 #include "MMappedStreams.hpp"
+#include "DWayMergeSorter.hpp"
 #include <iostream>
 #include <cstdio>
+#include <vector>
 
 #if defined(_WIN32) || defined(WIN32)
 #define OS_WIN
 #endif
+
+using namespace std;
 
 void test(AbstractInputStream<int>* in, AbstractOutputStream<int>* out, string testName) {
     int zize = 2048;
@@ -37,28 +41,54 @@ void test(AbstractInputStream<int>* in, AbstractOutputStream<int>* out, string t
 }
 
 int main(int argc, char** argv) {
+	vector<AbstractInputStream<int>* > ins;
+	string files[5] =  {"data/file_1", "data/file_2", "data/file_3", "data/file_4", "data/file_5"};
+	for (int i = 0; i < 5; i++) {
+		SingleItemOutputStream<int> out(files[i]);
+		out.create();
+		for (int j = 0; j < 5; j++) {
+			out.write(i + j);
+		}
+		out.close();
+		
+		SingleItemInputStream<int>* in = new SingleItemInputStream<int>(files[i]);
+		in->open();
+		ins.push_back(in);
+	}
 	
-    /* SingleStreams */
-	SingleItemOutputStream<int> out("data/foo");
-	SingleItemInputStream<int> in("data/foo");
+	SingleItemOutputStream<int> out("data/result");
+	DWayMergeSorter<int> sorter(ins, &out);
+	out.create();
+	sorter.merge();
+	out.close();
+	
+	SingleItemInputStream<int> in("data/result");
+	in.open();
+	while(!in.endOfStream()) {
+		printf("%i\n", in.readNext());
+	};
+	
+	
+	/*
+    // SingleStreams
 	test(&in, &out, "SingleItems");
     
-    /* FStreams */
+    // FStreams
     FInputStream<int> fin("data/foo");
     FOutputStream<int> fout("data/foo");
     test(&fin, &fout, "FStreams");
 
-    /* BufferedStreams */
+    // BufferedStreams
     BufferedInputStream<int> bin("data/foo", 512);
     BufferedOutputStream<int> bout("data/foo", 1024);
     test(&bin, &bout, "BStreams");
 
-	/* MMappedStreams */
+	// MMappedStreams
 	MMappedOutputStream<int> mout("data/foo", 1024);
 	MMappedInputStream<int> min("data/foo", 1024);
 	test(&min, &mout, "MMappedStreams");
 
-    /* Combos */
+    // Combos
     test(&in, &fout, "Streams -> FStream");
     test(&fin, &out, "FStreams -> Streams");
     test(&bin, &fout, "FStreams -> BufferedStreams");
@@ -66,4 +96,5 @@ int main(int argc, char** argv) {
     test(&bin, &mout, "BufferedStreams -> MMappedStreams");
     test(&min, &bout, "MMappedStreams -> BufferedOut");
     
+	*/
 }
