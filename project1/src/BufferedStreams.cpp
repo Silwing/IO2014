@@ -8,22 +8,24 @@ BufferedInputStream<E>::BufferedInputStream(string file, int size) {
     this->buffer = new E[size];
     this->file = file;
     this->size = size;
-};
-
-template <typename E>
-BufferedInputStream<E>::~BufferedInputStream() {
-    delete this->buffer;
+    fd = 0;
 };
 
 template <typename E>
 BufferedInputStream<E>::BufferedInputStream() {
-    
+    //default constructor. Used for creating arrays
 }
+
+template <typename E>
+BufferedInputStream<E>::~BufferedInputStream() {
+    delete this->buffer;
+    if (fd != 0)
+		::close(fd);
+};
 
 template <typename E>
 void BufferedInputStream<E>::open() {
 	fd = ::open(file.c_str(), O_RDONLY);
-	//TODO: what if file does not exists?
     fillBuffer();
 };
 
@@ -60,7 +62,7 @@ BufferedOutputStream<E>::~BufferedOutputStream() {
 
 template <typename E>
 void BufferedOutputStream<E>::create() {
-    fd = ::open(file.c_str(), O_WRONLY | O_CREAT, S_IRUSR | S_IWUSR);
+    fd = ::open(file.c_str(), O_WRONLY | O_CREAT | O_TRUNC, S_IRUSR | S_IWUSR);
     index = 0;
 }
 

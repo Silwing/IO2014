@@ -1,5 +1,5 @@
-CXX=g++
-CFLAGS= -c -Iinc -Wall
+CXX=clang
+CFLAGS= -c -Iinc -Wall -std=c++0x
 LFLAGS= -lstdc++
 
 SRC_DIR=src

@@ -8,11 +8,13 @@
 template<typename E>
 FInputStream<E>::FInputStream(string file) {
 	this->file = file; 
+	fd = NULL;
 }
 
 template<typename E>
 FInputStream<E>::~FInputStream() {
-
+	if (fd != NULL)
+		fclose(fd); 
 }
 
 template<typename E>
@@ -40,7 +42,7 @@ FOutputStream<E>::FOutputStream(string file) {
 
 template<typename E>
 FOutputStream<E>::~FOutputStream(){
-
+	
 }
 
 template<typename E>

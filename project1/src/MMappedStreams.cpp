@@ -14,15 +14,20 @@ MMappedInputStream<E>::MMappedInputStream(string file, size_t size) {
 	
 	this->file = file;
 	this->size = size;
+	fd = 0;
 }
 
 template<typename E>
 MMappedInputStream<E>::MMappedInputStream() {
-	
+	//Default constructor for arrays
 }
 
 template<typename E>
 MMappedInputStream<E>::~MMappedInputStream() {
+	if (buffer != NULL)
+		munmap((void*) buffer, size * sizeof(E));
+	if (fd != 0)
+		::close(fd);
 }
 
 template<typename E>
@@ -74,7 +79,6 @@ MMappedOutputStream<E>::MMappedOutputStream(string file, int size) {
 
 template<typename E>
 MMappedOutputStream<E>::~MMappedOutputStream() {
-	
 }
 
 template<typename E>
