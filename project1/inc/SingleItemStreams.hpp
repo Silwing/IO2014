@@ -16,6 +16,7 @@ private:
 
 public:
 	SingleItemInputStream(string file);
+	SingleItemInputStream(); 
 	~SingleItemInputStream();
 
 	void open();
@@ -31,6 +32,7 @@ private:
 
 public:
 	SingleItemOutputStream(string file);
+	SingleItemOutputStream(); 
 	~SingleItemOutputStream();
 
 	void create();

@@ -8,7 +8,8 @@ SRC_FILES=  SingleItemStreams.cpp       \
             BufferedStreams.cpp         \
             MMappedStreams.cpp			\
             DWayMergeSorter.cpp			\
-            main.cpp
+            main.cpp					\
+            tests/streamtests.cpp
                     
 SRC=$(addprefix $(SRC_DIR)/,$(SRC_FILES))
 
