@@ -8,6 +8,7 @@ SRC_FILES=  SingleItemStreams.cpp       \
             BufferedStreams.cpp         \
             MMappedStreams.cpp			\
             DWayMergeSorter.cpp			\
+            QuickSort.cpp				\
             main.cpp					\
             tests/streamtests.cpp
                     
