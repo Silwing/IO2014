@@ -47,7 +47,6 @@ DWayMergeSorter<E>::~DWayMergeSorter() {
 
 template <typename E>
 void DWayMergeSorter<E>::merge() {
-	//for (int i = 0; i < 10; i++) {
 	while(ins.size() != 0) {
 		make_heap(ins.begin(), ins.end());
 		

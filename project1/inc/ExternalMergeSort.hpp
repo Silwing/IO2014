@@ -11,20 +11,20 @@ class StreamFactory {
 		virtual ~StreamFactory() {
 		};
 		
-		AbstractInputStream<int> getInputStream(string path);
-		AbstractOutputStream<int> getOutputStream(string path);
+		virtual AbstractInputStream<int>* getInputStream(string path) = 0;
+		virtual AbstractOutputStream<int>* getOutputStream(string path) = 0;
 };
 
 class ExternalMergeSort {
 	private:
 		string input;
-		StreamFactory fac;
+		StreamFactory* fac;
 		int n, m, d;
 		
 	
 	public:
-		ExternalMergeSort(string input, StreamFactory fac, int n, int m, int d);
+		ExternalMergeSort(string input, StreamFactory* fac, int n, int m, int d);
 		~ExternalMergeSort();
 		
 		void sort(string output);
-}
+};

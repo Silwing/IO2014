@@ -8,6 +8,7 @@
 #include <cstdio>
 #include <vector>
 #include "QuickSort.hpp"
+#include "ExternalMergeSort.hpp"
 #include <fstream>
 
 #if defined(_WIN32) || defined(WIN32)
@@ -43,26 +44,40 @@ void test(AbstractInputStream<int>* in, AbstractOutputStream<int>* out, string t
     }
 }
 
+class SimpleFactory : public StreamFactory {
+	public:
+		AbstractInputStream<int>* getInputStream(string path) {
+			return new BufferedInputStream<int>(path, 1024);
+		}
+		
+		AbstractOutputStream<int>* getOutputStream(string path) {
+			return new BufferedOutputStream<int>(path, 1024);
+		}
+};
+
 void testSorting() {
-    vector<int> elements;
-    for (int i = 20; i > 10; i--) {
-		elements.push_back(rand() % 100);
+	int n = 1024 * 1024 * 1024;
+	BufferedOutputStream<int> out("data/unsorted", 1024);
+	out.create();
+	for (int i = 0; i < n; i++) {
+		out.write(rand() % n);
 	}
-    
-    printf("Before:\n");
-    for (vector<int>::iterator it = elements.begin(); it != elements.end(); it++) {
-		printf("%d ", *it);
+	out.close();
+	
+	ExternalMergeSort sorter("data/unsorted", new SimpleFactory(), n, 1024 * 1024 * 128, 256);
+	sorter.sort("data/sorted");
+	BufferedInputStream<int> in("data/sorted", 512);
+	in.open();
+	int i = in.readNext();
+	while(!in.endOfStream()) {
+		int j = in.readNext();
+		if (i > j) {
+			printf("Bad sorting!!\n");
+			return;
+		}
+		i = j;
 	}
-    printf("\n");
-    
-    QuickSort sorter;
-    sorter.sort(elements);
-    
-    printf("After:\n");
-    for (vector<int>::iterator it = elements.begin(); it != elements.end(); it++) {
-		printf("%d ", *it);
-	}
-    printf("\n");
+	printf("Good sorting\n");
 }
     
 void experiment(int n, int k, int b){
