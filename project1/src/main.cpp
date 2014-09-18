@@ -8,6 +8,7 @@
 #include <cstdio>
 #include <vector>
 #include "QuickSort.hpp"
+#include "HeapSort.hpp"
 #include <fstream>
 
 #if defined(_WIN32) || defined(WIN32)
@@ -77,6 +78,28 @@ void experiment(int n, int k, int b){
     }
 }
 
+void testHeapSort() {
+    vector<int> elements;
+    for (int i = 20; i > 10; i--) {
+        elements.push_back(rand() % 100);
+    }
+    
+    printf("Before:\n");
+    for (vector<int>::iterator it = elements.begin(); it != elements.end(); it++) {
+        printf("%d ", *it);
+    }
+    printf("\n");
+    
+    HeapSort sorter;
+    sorter.sort(elements);
+    
+    printf("After:\n");
+    for (vector<int>::iterator it = elements.begin(); it != elements.end(); it++) {
+        printf("%d ", *it);
+    }
+    printf("\n");   
+}
+
 int main(int argc, char** argv) {
     char flag = *argv[1]; 
     switch (flag) {
@@ -96,6 +119,9 @@ int main(int argc, char** argv) {
                 std::cout << "Wrong number of arguments, dummy";
                 exit(EXIT_FAILURE);
             }
+            break;
+        case 'h':
+            testHeapSort();
             break;
     }
 }
