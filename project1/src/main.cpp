@@ -7,7 +7,7 @@
 #include <iostream>
 #include <cstdio>
 #include <vector>
-
+#include <fstream>
 
 #if defined(_WIN32) || defined(WIN32)
 #define OS_WIN
@@ -42,69 +42,36 @@ void test(AbstractInputStream<int>* in, AbstractOutputStream<int>* out, string t
     }
 }
 
-int main(int argc, char** argv) {
-    bool t = false;
-    /*
-	vector<AbstractInputStream<int>* > ins;
-	string files[5] =  {"data/file_1", "data/file_2", "data/file_3", "data/file_4", "data/file_5"};
-	for (int i = 0; i < 5; i++) {
-		MMappedOutputStream<int> out(files[i], 1024);
-		out.create();
-		for (int j = 0; j < 5; j++) {
-			out.write(i + j);
-		}
-		out.close();
-		
-		BufferedInputStream<int>* in = new BufferedInputStream<int>(files[i], 256);
-		in->open();
-		ins.push_back(in);
-	}
-	
-	BufferedOutputStream<int> out("data/result", 64);
-	DWayMergeSorter<int> sorter(ins, &out);
-	out.create();
-	sorter.merge();
-	out.close();
-	
-	FInputStream<int> in("data/result");
-	in.open();
-	while(!in.endOfStream()) {
-		printf("%i\n", in.readNext());
-	};
-	*/
-	
-	/*
-    // SingleStreams 
-	SingleItemOutputStream<int> out("data/foo");
-	SingleItemInputStream<int> in("data/foo");
-	test(&in, &out, "SingleItems");
-    */
-    
-    // FStreams
-    FInputStream<int> fin("data/foo");
-    FOutputStream<int> fout("data/foo");
-    //test(&fin, &fout, "FStreams");
-
-    // BufferedStreams
-    BufferedInputStream<int> bin("data/foo", 1024);
-    BufferedOutputStream<int> bout("data/foo", 1024);
-    //test(&bin, &bout, "BStreams");
-
-	// MMappedStreams
-	MMappedOutputStream<int> mout("data/foo", 1024);
-	MMappedInputStream<int> min("data/foo", 1024);
-	test(&min, &mout, "MMappedStreams");
-    // Combos
-    //test(&in, &fout, "Streams -> FStream");
-    //test(&fin, &out, "FStreams -> Streams");
-    /*
-    test(&bin, &fout, "FStreams -> BufferedStreams");
-    test(&fin, &bout, "BufferedStreams -> FStream");
-    test(&bin, &mout, "BufferedStreams -> MMappedStreams");
-    test(&min, &bout, "MMappedStreams -> BufferedOut");
-	*/
-    if (t) {
-        start(); 
+void experiment(int n, int k, int b){
+    ofstream results; 
+    results.open("results.dat", ios::trunc);
+    results << "type\tn\tk\tout\tin" << endl;
+    results.close(); 
+    for (int i = 1; i<=k; i=i*2) {
+        for (int j = 1024; j<=b; j=j*2) {
+            start(i, n, j); 
+        }
     }
-    
+}
+
+int main(int argc, char** argv) {
+    char flag = *argv[1]; 
+    switch (flag) {
+        default: 
+            std::cout << flag << endl; 
+        case 'd':
+            break; 
+        case 't':
+            if(argc == 5){
+                int k = std::stoi(argv[2]);
+                int n = std::stoi(argv[3]);
+                int b = std::stoi(argv[4]);
+                // start(k, n, b);
+                experiment(n, k, b);
+            } else {
+                std::cout << "Wrong number of arguments, dummy";
+                exit(EXIT_FAILURE);
+            }
+            break;
+    }
 }
