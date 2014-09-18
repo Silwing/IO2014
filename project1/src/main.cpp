@@ -8,7 +8,7 @@
 #include <cstdio>
 #include <vector>
 #include "QuickSort.hpp"
-
+#include <fstream>
 
 #if defined(_WIN32) || defined(WIN32)
 #define OS_WIN
@@ -43,7 +43,7 @@ void test(AbstractInputStream<int>* in, AbstractOutputStream<int>* out, string t
     }
 }
 
-int main(int argc, char** argv) {
+void testSorting() {
     vector<int> elements;
     for (int i = 20; i > 10; i--) {
 		elements.push_back(rand() % 100);
@@ -63,4 +63,39 @@ int main(int argc, char** argv) {
 		printf("%d ", *it);
 	}
     printf("\n");
+}
+    
+void experiment(int n, int k, int b){
+    ofstream results; 
+    results.open("results.dat", ios::trunc);
+    results << "type\tn\tk\tout\tin" << endl;
+    results.close(); 
+    for (int i = 1; i<=k; i=i*2) {
+        for (int j = 1024; j<=b; j=j*2) {
+            start(i, n, j); 
+        }
+    }
+}
+
+int main(int argc, char** argv) {
+    char flag = *argv[1]; 
+    switch (flag) {
+        default: 
+            std::cout << flag << endl; 
+        case 'd':
+			testSorting();
+            break; 
+        case 't':
+            if(argc == 5){
+                int k = std::stoi(argv[2]);
+                int n = std::stoi(argv[3]);
+                int b = std::stoi(argv[4]);
+                // start(k, n, b);
+                experiment(n, k, b);
+            } else {
+                std::cout << "Wrong number of arguments, dummy";
+                exit(EXIT_FAILURE);
+            }
+            break;
+    }
 }

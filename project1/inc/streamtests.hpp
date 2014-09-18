@@ -1,3 +1,3 @@
 #pragma once
 
-void start(); 
+void start(int k, int n, int b); 

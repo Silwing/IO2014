@@ -8,6 +8,8 @@
 #include <sstream>
 #include <chrono>
 #include <thread>
+#include <fstream>
+#include <cmath>
 
 
 template<typename IN, typename OUT>
@@ -15,6 +17,10 @@ void test(IN* in, OUT* out, int k, int n, string testName) {
     //if ((sizeof(in) != k) || (sizeof(out) !=k)) {
     //    throw "Die in a fire. Deleting /system32";
     //}
+    n = (int) ceil(n / k);
+    ofstream results;
+    results.open("results.dat", ios::app);
+
     for (int l=0; l<k; l++) {
         out[l]->create();
     }
@@ -25,7 +31,7 @@ void test(IN* in, OUT* out, int k, int n, string testName) {
         }
     }
     auto t2 = std::chrono::high_resolution_clock::now(); 
-    std::cout << testName << "," << n << "," << k << "," << std::chrono::duration_cast<std::chrono::milliseconds>(t2-t1).count();
+    results << testName << "\t" << n << "\t" << k << "\t" << std::chrono::duration_cast<std::chrono::milliseconds>(t2-t1).count();
     for (int l=0; l<k; l++) {
         out[l]->close();
         in[l]->open();
@@ -41,18 +47,18 @@ void test(IN* in, OUT* out, int k, int n, string testName) {
         }
     }
     t2 = std::chrono::high_resolution_clock::now(); 
-    std::cout << "," << std::chrono::duration_cast<std::chrono::milliseconds>(t2-t1).count() << endl;
+    results << "\t" << std::chrono::duration_cast<std::chrono::milliseconds>(t2-t1).count() << endl;
     for (int i=0; i<k; i++) {
         if(!in[i]->endOfStream()) {
             std::cout << "Failed endOfStream at stream " << i << endl;
         }
     }
+    results.close(); 
     //std::cout << testName << " finished" << endl;
 }
 
-void start() {
-    std::cout << "type,n,k,out,in" << endl;
-    int k = 8; int n = 100000; int b = 1024;
+void start(int k, int n, int b) {
+    // std::cout << "type,n,k,out,in" << endl;
     SingleItemInputStream<int>* siis[k];
     SingleItemOutputStream<int>* sios[k];
     for (int i=0; i<k; i++) {

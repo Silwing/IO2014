@@ -1,6 +1,6 @@
 CXX=clang
 CFLAGS= -c -Iinc -Wall -std=c++0x
-LFLAGS= -lstdc++
+LFLAGS= -lstdc++ -lm
 
 SRC_DIR=src
 SRC_FILES=  SingleItemStreams.cpp       \
