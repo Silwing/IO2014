@@ -10,6 +10,7 @@ SRC_FILES=  SingleItemStreams.cpp       \
             DWayMergeSorter.cpp			\
             QuickSort.cpp				\
             ExternalMergeSort.cpp		\
+            HeapSort.cpp				\
             main.cpp					\
             tests/streamtests.cpp
                     
