@@ -62,7 +62,7 @@ BufferedOutputStream<E>::~BufferedOutputStream() {
 
 template <typename E>
 void BufferedOutputStream<E>::create() {
-    fd = ::open(file.c_str(), O_WRONLY | O_CREAT | O_TRUNC, S_IRUSR | S_IWUSR);
+    fd = ::open(file.c_str(), O_WRONLY | O_CREAT | O_TRUNC | O_NONBLOCK, S_IRUSR | S_IWUSR);
     index = 0;
 }
 

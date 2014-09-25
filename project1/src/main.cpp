@@ -11,6 +11,7 @@
 #include "ExternalMergeSort.hpp"
 #include "HeapSort.hpp"
 #include <fstream>
+#include <sys/resource.h>
 
 #if defined(_WIN32) || defined(WIN32)
 #define OS_WIN
@@ -19,7 +20,7 @@
 using namespace std;
 
 void test(AbstractInputStream<int>* in, AbstractOutputStream<int>* out, string testName) {
-    int size = 1024 * 1024 * 256;
+    int size = 1024 * 1024;
     out->create();
 	for (int i = 0; i < size; i++) {
         out->write(i);
@@ -41,8 +42,26 @@ void test(AbstractInputStream<int>* in, AbstractOutputStream<int>* out, string t
     if (!in->endOfStream()) {
         printf("%s failed at endOfStream\n", testName.c_str());
     } else {
-    //    printf("%s succeed\n", testName.c_str());
+        printf("%s succeed\n", testName.c_str());
     }
+}
+
+void testAll() {
+	SingleItemInputStream<int> sin("data/foo");
+	SingleItemOutputStream<int> sout("data/foo");
+	test(&sin, &sout, "SingleItemStreams");
+	
+	FInputStream<int> fin("data/bar");
+	FOutputStream<int> fout("data/bar");
+	test(&fin, &fout, "FStreams");
+	
+	BufferedInputStream<int> bin("data/baz", 64);
+	BufferedOutputStream<int> bout("data/baz", 64);
+	test(&bin, &bout, "BufferedInputStreams");
+	
+	MMappedInputStream<int> min("data/boz", 1024);
+	MMappedOutputStream<int> mout("data/boz", 1024);
+	test(&min, &mout, "MMappedStreams");
 }
 
 class SimpleFactory : public StreamFactory {
@@ -57,7 +76,7 @@ class SimpleFactory : public StreamFactory {
 };
 
 void testSorting() {
-	int n = 1024 * 1024 * 1024;
+	int n = 1024 * 1024 * 512;
 	BufferedOutputStream<int> out("data/unsorted", 1024);
 	out.create();
 	for (int i = 0; i < n; i++) {
@@ -84,7 +103,7 @@ void testSorting() {
 void experiment(int n, int k, int b){
     ofstream results; 
     results.open("results.dat", ios::trunc);
-    results << "type\tn\tk\tout\tin" << endl;
+    results << "type\tn\tk\tb\tout\tstin" << endl;
     results.close(); 
     for (int i = 1; i<=k; i=i*2) {
         for (int j = 1024; j<=b; j=j*2) {
@@ -138,5 +157,8 @@ int main(int argc, char** argv) {
         case 'h':
             testHeapSort();
             break;
+        case 'a':
+			testAll();
+			break;
     }
 }

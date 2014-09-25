@@ -5,5 +5,7 @@ bin/
 main
 main.exe
 
-#data
+#data etc
 data/
+results.dat
+tmp/

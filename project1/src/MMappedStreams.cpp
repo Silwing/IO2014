@@ -86,7 +86,7 @@ void MMappedOutputStream<E>::create() {
 	fdOffset = 0;
 	bufferOffset = 0;
 	buffer = NULL;
-	fd = ::open(file.c_str(), O_RDWR | O_CREAT | O_TRUNC, S_IRUSR | S_IWUSR);
+	fd = ::open(file.c_str(), O_RDWR | O_CREAT | O_TRUNC | O_NONBLOCK, S_IRUSR | S_IWUSR);
 	mapNextChunk();
 }
 
