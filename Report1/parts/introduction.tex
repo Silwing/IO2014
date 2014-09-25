@@ -1,2 +1,9 @@
 \section{Introduction}
-I/O is...something something
+
+ANSVAR: Rasmus
+
+In this report we describe our implementation, experiments and results we have achieved during project 1 for I/O algorithms 2014.
+As reading and writing to and from the disk is estimated at ${10^{6}}$ times slower than using RAM or the cpu cache, creating efficient algorithms can mean the difference between getting a result within a reasonable time-frame or not. 
+The usual memory model is made with a very small fast and local memory near cpu, a larger RAM memory, and finally the disk. Each level that is further away from the cpu becomes slower by a large factor. In our experiments and calculations we are only interested in calculating and experimenting with the time of the I/O operations. An I/O operation is defined by either a read or write to the main memory.
+
+
