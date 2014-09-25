@@ -1,0 +1,64 @@
+\documentclass[12pt,journal,compsoc]{IEEEconf}
+%\usepackage[english]{babel}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{graphicx}
+\usepackage{amsmath,amssymb, mathtools, bm, gauss}
+\usepackage{algorithm,algorithmic}
+\usepackage{listings}
+\usepackage{xcolor}
+\usepackage{hyperref}
+\usepackage{spverbatim}
+\usepackage[]{pgfplots}
+\usepackage{lscape}
+\usepackage{lmodern}
+\usepackage[labeled]{multibib}
+%\usepackage[colorlinks=true]{hyperref}
+\usepackage{varioref}
+
+\renewcommand*\ttdefault{txtt}
+
+\newcommand{\todo}[1]{{\color[rgb]{.5,0,0}\textbf{$\blacktriangleright$#1$\blacktriangleleft$}}}
+
+\lstset{basicstyle=\footnotesize\ttfamily,breaklines=true}
+\lstset{framextopmargin=50pt}
+
+\pagestyle{plain}
+\pagenumbering{arabic}
+
+\begin{document}
+\title{
+\huge{I/O Algorithms}
+\vskip0.5em
+\large{I/O-efficient merge-sort 2014 - group 6}
+}
+\author{
+Frederik Lønstrup Hansen\\ 20096365\\
+	\and
+Randi Katrine Hillerøe \\ 20103073 \\ 
+	\and
+Andreas Fyrstelin Kristiansen\\ 20092027 \\
+	\and
+Rasmus Kampmann Olsen\\ 20093692\\
+}
+
+\maketitle
+\begin{abstract}
+ANSVAR: ... rasmus? Har vi brug for et abstract? Der er jo som sådan intet nyt i det her, så tænker en introduction er nok
+\end{abstract}
+
+% see http://imf.au.dk/system/latex/bog/
+
+\input{parts/introduction}
+\input{parts/mergeSort-streams}
+\input{parts/d-way-merge}
+\input{parts/mergeSort-external}
+\input{parts/experiments}
+\input{parts/comparisons}
+\input{parts/conclusion}
+
+
+
+\pagebreak
+
+\end{document}
