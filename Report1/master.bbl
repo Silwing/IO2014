@@ -1,0 +1,29 @@
+\newcommand{\etalchar}[1]{$^{#1}$}
+\begin{thebibliography}{IYM{\etalchar{+}}06}
+
+\bibitem[FTT10]{fan2010design}
+Lu~Fan, Phil Trinder, and Hamish Taylor.
+\newblock Design issues for peer-to-peer massively multiplayer online games.
+\newblock {\em International Journal of Advanced Media and Communication},
+  4(2):108--125, 2010.
+
+\bibitem[HBH06]{hampel2006peer}
+Thorsten Hampel, Thomas Bopp, and Robert Hinn.
+\newblock A peer-to-peer architecture for massive multiplayer online games.
+\newblock In {\em Proceedings of 5th ACM SIGCOMM workshop on Network and system
+  support for games}, page~48. ACM, 2006.
+
+\bibitem[IYM{\etalchar{+}}06]{izaiku2006cheat}
+Takato Izaiku, Shinya Yamamoto, Yoshihiro Murata, Naoki Shibata, Keiichi
+  Yasumoto, and Minoru Ito.
+\newblock Cheat detection for mmorpg on p2p environments.
+\newblock In {\em Proceedings of 5th ACM SIGCOMM workshop on Network and system
+  support for games}, page~46. ACM, 2006.
+
+\bibitem[WS07]{webb2007cheating}
+Steven~Daniel Webb and Sieteng Soh.
+\newblock Cheating in networked computer games: a review.
+\newblock In {\em Proceedings of the 2nd international conference on Digital
+  interactive media in entertainment and arts}, pages 105--112. ACM, 2007.
+
+\end{thebibliography}

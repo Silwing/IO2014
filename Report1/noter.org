@@ -1,0 +1,48 @@
+
+* introduction
+we have created a (M)MOG dungeon crawler game
+
+* related work
+in this section we describe related work dealing with cheating and
+architecture in P2P MMOGs.
+
+** "A Survey of State Persistency in Peer-to-Peer"
+also describes some approaches for games.
+
+** "A Peer-to-Peer Architecture for Massive Multiplayer Online"
+describes an architecture built on Pastry, Scribe and Past. It also
+contains the idea of using controllers and backup controllers.
+
+
+** "Cheat Detection for MMORPG on P2P Environments"
+uses monitors to detect cheating
+
+** "Design Issues for Peer-to-Peer Massively Multiplayer Online Games"
+lists different design issues, and compares alternative approaches.
+
+** "Cheating in networked computer games – A review"
+Has a classification of different types of cheating.
+
+* system design & implementation
+In this section we discuss the architecture we have chosen for our
+project, and our implementation.
+
+
+
+* experiments/evaluation
+
+
+
+* conclusion
+
+* future work
+what did we not finish
+what could we have done better
+* references
+
+
+* A use case description
+could be under intro
+
+* A comprehensive manual
+as appendix I presume
