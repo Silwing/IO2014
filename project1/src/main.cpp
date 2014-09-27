@@ -12,6 +12,8 @@
 #include "HeapSort.hpp"
 #include <fstream>
 #include <sys/resource.h>
+#include <unistd.h>
+#include <cstring>
 
 #if defined(_WIN32) || defined(WIN32)
 #define OS_WIN
@@ -19,8 +21,16 @@
 
 using namespace std;
 
-void test(AbstractInputStream<int>* in, AbstractOutputStream<int>* out, string testName) {
-    int size = 1024 * 1024;
+struct Options {
+	vector<const char*> test_funcs;
+	vector<const char*> expe_funcs;
+	int n = 1024 * 1024; 	// file size
+	int k = 128; 			// number of files open at once also known as d
+	int b = 1024;			// block size / buffer size
+	int m = 1024;			// memory size
+};
+
+void test(AbstractInputStream<int>* in, AbstractOutputStream<int>* out, string testName, int size) {
     out->create();
 	for (int i = 0; i < size; i++) {
         out->write(i);
@@ -46,22 +56,30 @@ void test(AbstractInputStream<int>* in, AbstractOutputStream<int>* out, string t
     }
 }
 
-void testAll() {
-	SingleItemInputStream<int> sin("data/foo");
-	SingleItemOutputStream<int> sout("data/foo");
-	test(&sin, &sout, "SingleItemStreams");
+void testStreams(int n, int b) {
+	SingleItemInputStream<int> sin("data/si");
+	SingleItemOutputStream<int> sout("data/si");
+	test(&sin, &sout, "SingleItemStreams", n);
 	
-	FInputStream<int> fin("data/bar");
-	FOutputStream<int> fout("data/bar");
-	test(&fin, &fout, "FStreams");
+	FInputStream<int> fin("data/fs");
+	FOutputStream<int> fout("data/fs");
+	test(&fin, &fout, "FStreams", n);
 	
-	BufferedInputStream<int> bin("data/baz", 64);
-	BufferedOutputStream<int> bout("data/baz", 64);
-	test(&bin, &bout, "BufferedInputStreams");
+	BufferedInputStream<int> bin("data/bs", b);
+	BufferedOutputStream<int> bout("data/bs", b);
+	test(&bin, &bout, "BufferedInputStreams", n);
 	
-	MMappedInputStream<int> min("data/boz", 1024);
-	MMappedOutputStream<int> mout("data/boz", 1024);
-	test(&min, &mout, "MMappedStreams");
+	if (b % 1024 == 0) {
+		MMappedInputStream<int> min("data/mm", b);
+		MMappedOutputStream<int> mout("data/mm", b);
+		test(&min, &mout, "MMappedStreams", n);		
+	} else {
+		printf("Buffersize %d not suitable for MMappedStreams\n", b);
+	}
+	
+	test(&sin, &fout, "SStream -> FStream", n);
+	test(&fin, &bout, "FStream -> BStream", n);
+	test(&bin, &sout, "BStream -> SStream", n);
 }
 
 class SimpleFactory : public StreamFactory {
@@ -75,18 +93,17 @@ class SimpleFactory : public StreamFactory {
 		}
 };
 
-void testSorting() {
-	int n = 1024 * 1024 * 512;
-	BufferedOutputStream<int> out("data/unsorted", 1024);
+void testSorting(int n, int b, int m, int d) {
+	BufferedOutputStream<int> out("data/unsorted", b);
 	out.create();
 	for (int i = 0; i < n; i++) {
 		out.write(rand() % n);
 	}
 	out.close();
 	
-	ExternalMergeSort sorter("data/unsorted", new SimpleFactory(), n, 1024 * 1024 * 128, 256);
+	ExternalMergeSort sorter("data/unsorted", new SimpleFactory(), n, m, d);
 	sorter.sort("data/sorted");
-	BufferedInputStream<int> in("data/sorted", 512);
+	BufferedInputStream<int> in("data/sorted", b);
 	in.open();
 	int i = in.readNext();
 	while(!in.endOfStream()) {
@@ -112,53 +129,68 @@ void experiment(int n, int k, int b){
     }
 }
 
-void testHeapSort() {
-    vector<int> elements;
-    for (int i = 20; i > 10; i--) {
-        elements.push_back(rand() % 100);
-    }
-    
-    printf("Before:\n");
-    for (vector<int>::iterator it = elements.begin(); it != elements.end(); it++) {
-        printf("%d ", *it);
-    }
-    printf("\n");
-    
-    HeapSort sorter;
-    sorter.sort(elements);
-    
-    printf("After:\n");
-    for (vector<int>::iterator it = elements.begin(); it != elements.end(); it++) {
-        printf("%d ", *it);
-    }
-    printf("\n");   
-}
-
 int main(int argc, char** argv) {
-    char flag = *argv[1]; 
-    switch (flag) {
-        default: 
-            std::cout << flag << endl; 
-        case 'd':
-			testSorting();
-            break; 
-        case 't':
-            if(argc == 5){
-                int k = std::stoi(argv[2]);
-                int n = std::stoi(argv[3]);
-                int b = std::stoi(argv[4]);
-                // start(k, n, b);
-                experiment(n, k, b);
-            } else {
-                std::cout << "Wrong number of arguments, dummy";
-                exit(EXIT_FAILURE);
-            }
-            break;
-        case 'h':
-            testHeapSort();
-            break;
-        case 'a':
-			testAll();
+	char c;
+	struct Options opt;
+	bool info = false;
+	while((c = getopt(argc, argv, "t:e:n:b:k:m:d:i")) != -1) {
+		switch (c) {
+		case 't': //tests
+			opt.test_funcs.push_back(optarg);
 			break;
-    }
+		case 'e': //experiments
+			opt.expe_funcs.push_back(optarg);
+			break;
+			
+		//Params
+		case 'n':
+			opt.n = atoi(optarg);
+			break;
+		case 'k':
+		case 'd':
+			opt.k = atoi(optarg);
+			break;
+		case 'b':
+			opt.b = atoi(optarg);
+			break;
+		case 'm':
+			opt.m = atoi(optarg);
+			break;
+		case 'i':
+			info = true;
+			break;
+		case '?':
+		case ':':
+			break;
+		}
+	}
+	
+	if (info) {
+		printf("Options:\n");
+		printf("  n    : %d\n", opt.n);
+		printf("  m    : %d\n", opt.m);
+		printf("  k (d): %d\n", opt.k);
+		printf("  b    : %d\n", opt.b);
+	}
+
+	
+	for (vector<const char*>::iterator it = opt.test_funcs.begin(); it != opt.test_funcs.end(); it++) {
+		const char* arg = *it;
+		if (strcmp(arg, "streams") == 0) {
+			testStreams(opt.n, opt.b);
+		} else if (strcmp(arg, "sort") == 0) {
+			testSorting(opt.n, opt.b, opt.m, opt.k);
+		} else {
+			printf("Unknown test function: %s\n", arg);
+		}
+	}
+	
+	for (vector<const char*>::iterator it = opt.expe_funcs.begin(); it != opt.expe_funcs.end(); it++) {
+		const char* arg = *it;
+		if (strcmp(arg, "streams") == 0) {
+			experiment(opt.n, opt.k, opt.b);
+		} else {
+			printf("Unknown experiment function: %s\n", arg);
+		}
+	}
 }

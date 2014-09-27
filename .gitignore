@@ -9,3 +9,8 @@ main.exe
 data/
 results.dat
 tmp/
+
+#binary files
+.dvi
+.pdf
+.ps
