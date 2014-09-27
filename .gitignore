@@ -11,6 +11,6 @@ results.dat
 tmp/
 
 #binary files
-.dvi
-.pdf
-.ps
+*.dvi
+*.pdf
+*.ps
