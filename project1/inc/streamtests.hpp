@@ -1,3 +1,6 @@
 #pragma once
+#include "AbstractStreams.hpp"
 
-void start(int k, int n, int b); 
+namespace experiments {
+	void start(int k, int n, StreamFactory* fac); 
+}

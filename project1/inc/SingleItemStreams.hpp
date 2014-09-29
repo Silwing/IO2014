@@ -1,7 +1,6 @@
 #pragma once
 
-#include "AbstractInputStream.hpp"
-#include "AbstractOutputStream.hpp"
+#include "AbstractStreams.hpp"
 #include <string>
 
 using namespace std;
@@ -38,4 +37,13 @@ public:
 	void create();
 	void write(E e);
 	void close();
+};
+
+class SingleItemStreamFactory : public StreamFactory {
+	
+public:
+	AbstractInputStream<int>* getInputStream(string path);
+	AbstractOutputStream<int>* getOutputStream(string path);
+	
+	string getInfo();
 };

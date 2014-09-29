@@ -8,8 +8,9 @@
 
 template<typename E>
 MMappedInputStream<E>::MMappedInputStream(string file, size_t size) {
-	if (size * sizeof(E) % sysconf(_SC_PAGE_SIZE) != 0) {
-		throw "Baaad size. Have to be modulo pagesize (4096 on most systems)";
+	int pageSize = sysconf(_SC_PAGE_SIZE);
+	if (size * sizeof(E) % pageSize != 0) {
+		throw "Bad buffer size. Have to be modulo pagesize (" + to_string(pageSize / sizeof(E)) + " on this systems)";
 	}
 	
 	this->file = file;
@@ -69,8 +70,9 @@ bool MMappedInputStream<E>::endOfStream() {
 
 template<typename E>
 MMappedOutputStream<E>::MMappedOutputStream(string file, int size) {
-	if (size * sizeof(E) % sysconf(_SC_PAGE_SIZE) != 0) {
-		throw "Baaad size. Have to be modulo pagesize (4096 on most systems)";
+	int pageSize = sysconf(_SC_PAGE_SIZE);
+	if (size * sizeof(E) % pageSize != 0) {
+		throw "Bad buffer size. Have to be modulo pagesize (" + to_string(pageSize / sizeof(E)) + " on this systems)";
 	}
 	
 	this->file = file;
@@ -122,3 +124,28 @@ void MMappedOutputStream<E>::mapNextChunk() {
 
 template class MMappedInputStream<int>;
 template class MMappedOutputStream<int>;
+
+MMappedStreamFactory::MMappedStreamFactory(int size) : size(size) {
+}
+
+AbstractInputStream<int>* MMappedStreamFactory::getInputStream(string path) {
+	try {
+		return new MMappedInputStream<int>(path, size);	
+	} catch (string err) {
+		fprintf(stderr, "Error: %s\n", err.c_str());
+		exit(-1);
+	}
+}
+
+AbstractOutputStream<int>* MMappedStreamFactory::getOutputStream(string path) {
+	try {
+		return new MMappedOutputStream<int>(path, size);
+	} catch (string err) {
+		fprintf(stderr, "Error: %s\n", err.c_str());
+		exit(-1);
+	}
+}
+
+string MMappedStreamFactory::getInfo() {
+	return "MMappedStreams\t" + to_string(size);
+}

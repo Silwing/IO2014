@@ -62,3 +62,17 @@ void FOutputStream<E>::close(){
 
 template class FOutputStream<int>;
 template class FInputStream<int>;
+
+
+
+AbstractInputStream<int>* FStreamFactory::getInputStream(string path) {
+	return new FInputStream<int>(path);
+}
+
+AbstractOutputStream<int>* FStreamFactory::getOutputStream(string path) {
+	return new FOutputStream<int>(path);
+}
+
+string FStreamFactory::getInfo() {
+	return "FStreams";
+}

@@ -1,6 +1,4 @@
 #include "DWayMergeSorter.hpp"
-#include "AbstractInputStream.hpp"
-#include "AbstractOutputStream.hpp"
 #include <algorithm>
 #include <cstdio>
 

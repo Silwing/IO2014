@@ -1,6 +1,6 @@
 #pragma once
-#include "AbstractInputStream.hpp"
-#include "AbstractOutputStream.hpp"
+
+#include "AbstractStreams.hpp"
 #include <string>
 #include <sys/types.h>
 
@@ -48,4 +48,16 @@ class MMappedOutputStream : public AbstractOutputStream<E> {
 		void create();
 		void write(E e);
 		void close();
+};
+
+class MMappedStreamFactory : public StreamFactory {
+private:
+	int size;
+	
+public:
+	MMappedStreamFactory(int size);
+	AbstractInputStream<int>* getInputStream(string path);
+	AbstractOutputStream<int>* getOutputStream(string path);
+	
+	string getInfo();
 };

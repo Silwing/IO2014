@@ -25,7 +25,7 @@ void ExternalMergeSort::sort(string output) {
 	in->open();
 	int i = 0;
 	vector<int> elements;
-	while(!in->endOfStream() && i < n) {
+	while(!in->endOfStream() && (i < n || n == -1)) {
 		elements.push_back(in->readNext());
 		i++;
 		if (elements.size() == m || i == n || in->endOfStream()) {
@@ -44,6 +44,7 @@ void ExternalMergeSort::sort(string output) {
 	}
 	
 	delete in;
+	fprintf(stderr, "Stream splitted. Now merging\n");
 	
 	//merge
 	while (paths.size() > 0) {

@@ -1,7 +1,6 @@
 #pragma once
 #include <vector>
-#include "AbstractInputStream.hpp"
-#include "AbstractOutputStream.hpp"
+#include "AbstractStreams.hpp"
 
 using namespace std;
 

@@ -11,7 +11,9 @@ SRC_FILES=  SingleItemStreams.cpp       \
             QuickSort.cpp				\
             ExternalMergeSort.cpp		\
             HeapSort.cpp				\
+            Timer.cpp					\
             main.cpp					\
+            tests/sortingtest.cpp		\
             tests/streamtests.cpp
                     
 SRC=$(addprefix $(SRC_DIR)/,$(SRC_FILES))

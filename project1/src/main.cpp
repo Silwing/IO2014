@@ -4,6 +4,8 @@
 #include "MMappedStreams.hpp"
 #include "DWayMergeSorter.hpp"
 #include "streamtests.hpp"
+#include "tests/sortingtest.hpp"
+#include "Timer.hpp"
 #include <iostream>
 #include <cstdio>
 #include <vector>
@@ -28,6 +30,9 @@ struct Options {
 	int k = 128; 			// number of files open at once also known as d
 	int b = 1024;			// block size / buffer size
 	int m = 1024;			// memory size
+	const char* stream = "bs"; // Which streams to use: si (SingleItemStreams), fi (FStreams), bs (BufferedStreams), mm (MMappedStreams)
+	const char* input = "input.txt";
+	const char* output = "output.txt";
 };
 
 void test(AbstractInputStream<int>* in, AbstractOutputStream<int>* out, string testName, int size) {
@@ -40,19 +45,19 @@ void test(AbstractInputStream<int>* in, AbstractOutputStream<int>* out, string t
 	in->open();
     for (int i = 0; i < size; i++) {
         if (in->endOfStream()) {
-            printf("%s failed with endOfStream at %d\n", testName.c_str(), i);
+            fprintf(stderr, "%s failed with endOfStream at %d\n", testName.c_str(), i);
             return;
         }
 		int j = in->readNext();
         if (i != j) {
-            printf("%s failed at element %d. Got %d\n", testName.c_str(), i, j);
+            fprintf(stderr, "%s failed at element %d. Got %d\n", testName.c_str(), i, j);
             return;
         }
     }
     if (!in->endOfStream()) {
-        printf("%s failed at endOfStream\n", testName.c_str());
+        fprintf(stderr, "%s failed at endOfStream\n", testName.c_str());
     } else {
-        printf("%s succeed\n", testName.c_str());
+        fprintf(stderr, "%s succeed\n", testName.c_str());
     }
 }
 
@@ -82,17 +87,6 @@ void testStreams(int n, int b) {
 	test(&bin, &sout, "BStream -> SStream", n);
 }
 
-class SimpleFactory : public StreamFactory {
-	public:
-		AbstractInputStream<int>* getInputStream(string path) {
-			return new BufferedInputStream<int>(path, 1024);
-		}
-		
-		AbstractOutputStream<int>* getOutputStream(string path) {
-			return new BufferedOutputStream<int>(path, 1024);
-		}
-};
-
 void testSorting(int n, int b, int m, int d) {
 	BufferedOutputStream<int> out("data/unsorted", b);
 	out.create();
@@ -101,7 +95,7 @@ void testSorting(int n, int b, int m, int d) {
 	}
 	out.close();
 	
-	ExternalMergeSort sorter("data/unsorted", new SimpleFactory(), n, m, d);
+	ExternalMergeSort sorter("data/unsorted", new BufferedStreamFactory(1024), n, m, d);
 	sorter.sort("data/sorted");
 	BufferedInputStream<int> in("data/sorted", b);
 	in.open();
@@ -116,24 +110,13 @@ void testSorting(int n, int b, int m, int d) {
 	}
 	printf("Good sorting\n");
 }
-    
-void experiment(int n, int k, int b){
-    ofstream results; 
-    results.open("results.dat", ios::trunc);
-    results << "type\tn\tk\tb\tout\tstin" << endl;
-    results.close(); 
-    for (int i = 1; i<=k; i=i*2) {
-        for (int j = 1024; j<=b; j=j*2) {
-            start(i, n, j); 
-        }
-    }
-}
 
 int main(int argc, char** argv) {
 	char c;
 	struct Options opt;
 	bool info = false;
-	while((c = getopt(argc, argv, "t:e:n:b:k:m:d:i")) != -1) {
+	bool verbose = false;
+	while((c = getopt(argc, argv, "t:e:n:b:k:m:d:Ivs:o:i:")) != -1) {
 		switch (c) {
 		case 't': //tests
 			opt.test_funcs.push_back(optarg);
@@ -141,7 +124,6 @@ int main(int argc, char** argv) {
 		case 'e': //experiments
 			opt.expe_funcs.push_back(optarg);
 			break;
-			
 		//Params
 		case 'n':
 			opt.n = atoi(optarg);
@@ -156,8 +138,21 @@ int main(int argc, char** argv) {
 		case 'm':
 			opt.m = atoi(optarg);
 			break;
+		case 's':
+			opt.stream = optarg;
+			break;
+		case 'o':
+			opt.output = optarg;
+			break;
 		case 'i':
+			opt.input = optarg;
+			break;
+		//Debugging and stuff
+		case 'I':
 			info = true;
+			break;
+		case 'v':
+			verbose = true;
 			break;
 		case '?':
 		case ':':
@@ -166,13 +161,28 @@ int main(int argc, char** argv) {
 	}
 	
 	if (info) {
-		printf("Options:\n");
-		printf("  n    : %d\n", opt.n);
-		printf("  m    : %d\n", opt.m);
-		printf("  k (d): %d\n", opt.k);
-		printf("  b    : %d\n", opt.b);
+		fprintf(stderr, "Options:\n");
+		fprintf(stderr, "  n    : %d\n", opt.n);
+		fprintf(stderr, "  m    : %d\n", opt.m);
+		fprintf(stderr, "  k (d): %d\n", opt.k);
+		fprintf(stderr, "  b    : %d\n", opt.b);
+		fprintf(stderr, "  in   : %s\n", opt.input);
+		fprintf(stderr, "  out  : %s\n", opt.output);
 	}
 
+	StreamFactory* fac;
+	if (strcmp(opt.stream, "si") == 0) fac = new SingleItemStreamFactory();
+	else if (strcmp(opt.stream, "fs") == 0) fac = new FStreamFactory();
+	else if (strcmp(opt.stream, "bs") == 0) fac = new BufferedStreamFactory(opt.b);
+	else if (strcmp(opt.stream, "mm") == 0) fac = new MMappedStreamFactory(opt.b);
+	else {
+		fprintf(stderr, "Unknown stream chosen %s\n", opt.stream);
+		return -1;
+	}
+	
+	if (!verbose) {
+		freopen("/dev/null", "w", stderr);
+	}
 	
 	for (vector<const char*>::iterator it = opt.test_funcs.begin(); it != opt.test_funcs.end(); it++) {
 		const char* arg = *it;
@@ -181,16 +191,39 @@ int main(int argc, char** argv) {
 		} else if (strcmp(arg, "sort") == 0) {
 			testSorting(opt.n, opt.b, opt.m, opt.k);
 		} else {
-			printf("Unknown test function: %s\n", arg);
+			fprintf(stderr, "Unknown test function: %s\n", arg);
 		}
 	}
 	
 	for (vector<const char*>::iterator it = opt.expe_funcs.begin(); it != opt.expe_funcs.end(); it++) {
 		const char* arg = *it;
 		if (strcmp(arg, "streams") == 0) {
-			experiment(opt.n, opt.k, opt.b);
+			experiments::start(opt.k, opt.n, fac);
+		} else if (strcmp(arg, "external") == 0) {
+			experiments::sort(fac, opt.input, opt.output, opt.m, opt.k);
+		} else if (strcmp(arg, "data") == 0) {
+			AbstractOutputStream<int>* out = fac->getOutputStream(opt.output);
+			out->create();
+			for (int i = 0; i < opt.n; i++) {
+				out->write(rand());
+			}
+			out->close();
+			delete out;
+		} else if (strcmp(arg, "check") == 0) {
+			AbstractInputStream<int>* in = fac->getInputStream(opt.input);
+			in->open();
+			int i = in->readNext();
+			while(!in->endOfStream()) {
+				int j = in->readNext();
+				if (i > j) {
+					printf("Not sorted\n");
+					return -1;
+				}
+				i = j;
+			}
+			printf("Sorted\n");
 		} else {
-			printf("Unknown experiment function: %s\n", arg);
+			fprintf(stderr, "Unknown experiment function: %s\n", arg);
 		}
 	}
 }

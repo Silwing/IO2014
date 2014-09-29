@@ -87,3 +87,19 @@ void BufferedOutputStream<E>::close() {
 
 template class BufferedInputStream<int>;
 template class BufferedOutputStream<int>;
+
+BufferedStreamFactory::BufferedStreamFactory(int size) : size(size) {
+	
+}
+
+AbstractInputStream<int>* BufferedStreamFactory::getInputStream(string path) {
+	return new BufferedInputStream<int>(path, size);
+}
+
+AbstractOutputStream<int>* BufferedStreamFactory::getOutputStream(string path) {
+	return new BufferedOutputStream<int>(path, size);
+}
+
+string BufferedStreamFactory::getInfo() {
+	return "BufferedStreams\t" + to_string(size);
+}
