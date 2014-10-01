@@ -26,7 +26,11 @@ function print(other) {
     "use strict";
     return function (stat, i) {
         if (stat) {
-            console.log((i + "\t" + stat + "\t" + other[i]).replace(/\./g, ","));
+            if (other[i]) {
+                console.log((i + "\t" + stat + "\t" + other[i]).replace(/\./g, ","));
+            } else {
+                console.log((i + "\t" + stat).replace(/\./g, ","));
+            }
         }
     };
 }
@@ -34,28 +38,32 @@ function print(other) {
 process.stdin.on('end', function () {
     "use strict";
     
-    var stat = [],
-        s;
+    var stat = {
+        read: [],
+        write: []
+    };
     data.split("\n").forEach(function (line) {
         var args = line.split("\t"),
             b = parseInt(args[x], 10),
             ms = parseInt(args[y], 10),
-            i,
             struct;
         if (args.length < Math.max(x, y)) {
             return;
         }
-        i = args[0];
-        stat[i] = stat[i] || [];
-        struct = stat[i];
+        
+        switch (args[0][0]) {
+        case 'W':
+            struct = stat.write;
+            break;
+        default:
+            struct = stat.read;
+            break;
+        }
+        
         struct[b] = struct[b] || [];
         struct[b].push(ms);
     });
     
-    for (s in stat) {
-        if (stat.hasOwnProperty(s)) {
-            console.error(stat[s]);
-            stat[s].map(avg).forEach(print);
-        }
-    }
+    
+    stat.read.map(avg).forEach(print(stat.write.map(avg)));
 });

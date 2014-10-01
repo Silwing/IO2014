@@ -23,16 +23,28 @@
 
 using namespace std;
 
+StdReporter rep;
+
 struct Options {
 	vector<const char*> test_funcs;
 	vector<const char*> expe_funcs;
-	int n = 1024 * 1024; 	// file size
-	int k = 128; 			// number of files open at once also known as d
-	int b = 1024;			// block size / buffer size
-	int m = 1024;			// memory size
-	const char* stream = "bs"; // Which streams to use: si (SingleItemStreams), fi (FStreams), bs (BufferedStreams), mm (MMappedStreams)
-	const char* input = "input.txt";
-	const char* output = "output.txt";
+	int n;
+	int k;
+	int b;
+	int m;
+	const char* stream;
+	const char* input;
+	const char* output;
+	
+	Options() {
+		n = 1024 * 1024; 	// file size
+		k = 32; 			// number of files open at once also known as d
+		b = 1024;			// block size / buffer size
+		m = 65536;			// memory size
+		stream = "bs"; 		// Which streams to use: si (SingleItemStreams), fi (FStreams), bs (BufferedStreams), mm (MMappedStreams)
+		input = "input.txt";
+		output = "output.txt";
+	}
 };
 
 void test(AbstractInputStream<int>* in, AbstractOutputStream<int>* out, string testName, int size) {
@@ -200,10 +212,47 @@ int main(int argc, char** argv) {
 		if (strcmp(arg, "streams") == 0) {
 			experiments::start(opt.k, opt.n, fac);
 		} else if (strcmp(arg, "external") == 0) {
-			experiments::sort(fac, opt.input, opt.output, opt.m, opt.k);
+			experiments::sort(fac, opt.input, opt.output, opt.m, opt.k, opt.n);
+		} else if (strcmp(arg, "quick") == 0) {
+			Timer timer(&rep, "QuickSorting\t" + to_string(opt.n));
+			vector<int> elements;
+			AbstractInputStream<int>* in = fac->getInputStream(opt.input);
+			in->open();
+			while(!in->endOfStream() && opt.n-- != 0) {
+				elements.push_back(in->readNext());
+			}
+			QuickSort sorter;
+			sorter.sort(elements);
+			
+			AbstractOutputStream<int>* out = fac->getOutputStream(opt.output);
+			out->create();
+			for (int i : elements) {
+				fprintf(stderr, "%d, ", i);
+				out->write(i);
+			}
+			out->close();
+		} else if (strcmp(arg, "heap") == 0) {
+			Timer timer(&rep, "HeapSorting\t" + to_string(opt.n));
+			vector<int> elements;
+			AbstractInputStream<int>* in = fac->getInputStream(opt.input);
+			in->open();
+			while(!in->endOfStream() && opt.n-- != 0) {
+				elements.push_back(in->readNext());
+			}
+			HeapSort sorter;
+			sorter.sort(elements);
+			
+			AbstractOutputStream<int>* out = fac->getOutputStream(opt.output);
+			out->create();
+			for (int i : elements) {
+				fprintf(stderr, "%d, ", i);
+				out->write(i);
+			}
+			out->close();
 		} else if (strcmp(arg, "data") == 0) {
 			AbstractOutputStream<int>* out = fac->getOutputStream(opt.output);
 			out->create();
+			srand(time(NULL));
 			for (int i = 0; i < opt.n; i++) {
 				out->write(rand());
 			}

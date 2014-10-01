@@ -5,5 +5,5 @@
 using namespace std;
 
 namespace experiments {
-	void sort(StreamFactory* fac, string input, string output, int m, int d);
+	void sort(StreamFactory* fac, string input, string output, int m, int d, int n);
 };
