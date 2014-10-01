@@ -34,32 +34,28 @@ function print(other) {
 process.stdin.on('end', function () {
     "use strict";
     
-    var stat = {
-        read: [],
-        write: []
-    };
+    var stat = [],
+        s;
     data.split("\n").forEach(function (line) {
         var args = line.split("\t"),
             b = parseInt(args[x], 10),
             ms = parseInt(args[y], 10),
+            i,
             struct;
         if (args.length < Math.max(x, y)) {
             return;
         }
-        
-        switch (args[0][0]) {
-        case 'W':
-            struct = stat.write;
-            break;
-        case 'R':
-            struct = stat.read;
-            break;
-        }
-        
+        i = args[0];
+        stat[i] = stat[i] || [];
+        struct = stat[i];
         struct[b] = struct[b] || [];
         struct[b].push(ms);
     });
     
-    
-    stat.read.map(avg).forEach(print(stat.write.map(avg)));
+    for (s in stat) {
+        if (stat.hasOwnProperty(s)) {
+            console.error(stat[s]);
+            stat[s].map(avg).forEach(print);
+        }
+    }
 });
