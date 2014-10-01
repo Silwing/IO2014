@@ -5,7 +5,26 @@ During the first part of our testing we did in no way manage to get the expected
 We have however found a solution to the above problem, which gives results that fit the theory a lot better. By including an optimization flag for our compiler (in our case we used clang) not only did the running time decreased by roughly 1/3 but the results of the test cases also align better with the expected result. 
 
 \subsection{Stream implementations}
-Frederik
+The tests for our streams include testing different values of the buffersize b, the amount of streams d, and with varying size of elements n. 
+Each test has been run 100 times where the average is the values used in the graphs. 
+
+\subsubsection{SingleItemStream and FStream}
+\includegraphics[width=0.5]{SIS.png}
+\includegraphics[width=0.5]{FS.png}
+The implementation of these streams does not require a manually set buffer size, this is because the OS or the compiler does this in advance. 
+
+The SingleItemStream is behaving as expected; the number of streams does not affect reading very much, and writing increases a bit per stream added, but nothing significant, so it may be attributed to implementation flaws. 
+
+The FStreams graph shows a wide variance in reading, but i stays within a 200ms range not dependant on the amount of streams. Writing on the other hand shows a rapid increase in performance after exceeding 64 streams. 
+
+\subsubsection{BufferedStreams and MMappedStreams}
+\includegraphics[width=0.5]{BS.png}
+\includegraphics[width=0.5]{MMS.png}
+These tests was done with a buffer size of 1024, because this was shown to be the best one when we tested them based on buffersize. 
+
+The BufferedStreams implementation does reading reasonably well, with no significant increase in performance, the writing on the other hand does worse with more streams, with a slight drop around 256 streams, just to continue its performance decline. 
+
+The MMappedStreams behaves similarly to the BufferedStreams, except that the running time is just slightly worse. The running time is practically unchanged for reading, while writing increases in running time the more streams we add. The interesting thing to note here though, is the large decline in performance with a buffer size of 124, afterwards it drops again to expectable levels, and continues as such. 
 
 \subsection{ Finding merge sort parameters}
 Andreas
