@@ -1,5 +1,14 @@
 \section{Experiments}
 
+All of our experiments are run with a limitation of 1mb RAM - a limitation we achieved by using cgroups in linux - on a standard mechanical hard-drive. This was done to significantly reduce the running time of our experiments and the amount of data required. 
+During the first part of our testing we did in no way manage to get the expected results. In fact they were more or less opposite of the what the theory predicted. For example running the external merge sort with one small and one large N showed the larger N to be faster! We have not managed to find an adequate explanation for this so far and it would require require more investigation to find the reason.
+We have however found a solution to the above problem, which gives results that fit the theory a lot better. By including an optimization flag for our compiler (in our case we used clang) not only did the running time decreased by roughly 1/3 but the results of the test cases also align better with the expected result. 
+
+\subsection{ stuff...}
+
+ 
+
+
 results: Frederik er pisse god til det der med grafer har jeg hørt!
 
 Setup, thoughts about variables etc
