@@ -2,8 +2,11 @@
 This section describes our implementation of the 4 different required streams. 
 
 \subsection{Single item stream}
-Single item streams...
+The single item streams are the most simple implementation with no optimizations.
 
+The input stream uses the C function \texttt{open} to open a file in read-only mode and the \texttt{read} function to read a single element from the file. To implement the \texttt{endOfStream} functionality we have actually implemented a single item buffer. The buffer is initially populated right after calling \texttt{open} and then updated every time \texttt{readNext} is called. This is done to know whether we have reached the end of the file or not. If no more can be read from the file when the buffer is updated we have reached the end.
+
+The output stream opens a file in write-only mode. If the file does not exist it will be created. If the file does exist the file is truncated to ensure we write to an empty file.
 
 \subsection{Fread and FWrite}
 Fread and FWrite 
