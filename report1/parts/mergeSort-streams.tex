@@ -8,14 +8,14 @@ The input stream uses the C function \texttt{open} to open a file in read-only m
 
 The output stream opens a file in write-only mode. If the file does not exist it will be created. If the file does exist the file is truncated to ensure we write to an empty file.
 
-\subsection{Fread and FWrite}
-Fread and FWrite uses the standard c \texttt{fread and fwrite}. Unlike single item stream we do not require a single item buffer, as we can use the call to \texttt{feof} on the file description to know if we have reached the end of file. 
+\subsection{FRead and FWrite}
+FRead and FWrite uses the standard c \texttt{fread} and \texttt{fwrite} functions. Unlike the single item streams we do not require a single item buffer. Instead we use the call to \texttt{feof} on the file descriptor to know if we have reached the end of the file. 
 
 
 \subsection{Buffered}
-Buffered input and output allows us to set our own buffer sizes, unlike fread/fwrite. We do this by using the std open and write calls. For the write case we use a variable index to keep track of when to write the buffer. For read we do something similar - each time readNext is called we increment a index variable to know when to read the next part of the file into our buffer.  	
+Buffered input and output allows us to set our own buffer sizes, unlike fread/fwrite. We do this by using the std \texttt{open} and \texttt{write} calls. For the write case we use a variable index to keep track of when to write the buffer. For read we do something similar - each time readNext is called we increment an index variable to know when to read the next part of the file into our buffer.  	
 
 
 \subsection{mmap/munmap}
-For mmap one of the most important details is to make sure the buffer is a valid number. buffersize \% system page size needs to be 0 - this is checked in the constructor of the stream. When calling readNext we do something similar to bufferedStream by keeping track of the remaning number of times readNext can be called before it is required to read in the next chunck of memory.     
-Once it is required to read in the next chunck we do so, and make sure to increment a file descriptor offset so we know where to read in the file the next time. The same concept is used for the output stream
+For mmap one of the most important details is to make sure the buffer is a valid size. The buffersize needs to be divisible by the pagesize - this is checked in the constructor of the stream. When calling readNext we do something similar to bufferedStream by keeping track of the remaning number of times readNext can be called before it is required to read in the next chunck of memory.     
+Once it is required to read in the next chunck we do so, and make sure to increment a file descriptor offset so we know where to read in the file the next time. The same concept is used for the output stream.
