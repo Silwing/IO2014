@@ -44,7 +44,6 @@ void ExternalMergeSort::sort(string output) {
 	}
 	
 	delete in;
-	fprintf(stderr, "Stream splitted. Now merging\n");
 	
 	//merge
 	while (paths.size() > 0) {
@@ -75,6 +74,5 @@ void ExternalMergeSort::sort(string output) {
 			delete *it;
 		}
 	}
-	
 	
 }
