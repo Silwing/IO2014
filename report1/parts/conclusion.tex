@@ -1,4 +1,5 @@
 \section{Conclusion}
-Ansvar: Os alle !?
+As mentioned in the experiments section our initial results were more or less opposite of the what we had expected. By including an optimization flag (specifically "-O3") for the clang compiler our results showed to be more as expected. We have not found a explanation for this.
+After compiler optimizations our results are as expected and we managed to run several tests to find the optimal parameters for external merge sorting and compare them against in-memory quicksort and heapsort. Ultimately we have shown that external merge sort with low ram, and a comparable high amount of data is quite fast when the correct parameters are chosen. For example with 1 mb of RAM sorting 64 mb data can be done in roughly 20 seconds.
 
-Oh wow I/O is slow shit!! You better make sure you do it in a smart way!
+As all our tests were carried out with only 1 mb RAM it would be relevant to test how changing this affects the different variables, if at all.
