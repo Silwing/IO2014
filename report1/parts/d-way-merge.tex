@@ -1,5 +1,8 @@
 \section{D-way merge sort}
 
+Our d-way merge sort takes d sorted input streams \textit{ins}, and creates an output stream with the elements from each stream in a sorted order. Merging takes place in the method \textit{merge}. We use a small helper class, streamHeader, where we can easily access the next element in the stream and start loading in the next element(s) if required. In this class there is a boolean flag called \textit{done}, which is used to check if an input stream should be included in the rebuilding of the heap after extracting an element from the streamHeader.
+We use the standard c++ \textit{make_heap} function.
+
 ANSVAR: rasmus...andreas?
 D-way merge sort
 
