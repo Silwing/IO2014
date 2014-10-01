@@ -1,0 +1,22 @@
+External sort with BufferedStreams	4	65536	32	3771
+External sort with BufferedStreams	16	65536	32	18832
+External sort with BufferedStreams	64	65536	32	583951
+External sort with BufferedStreams	4	65536	32	3510
+External sort with BufferedStreams	16	65536	32	18409
+External sort with BufferedStreams	64	65536	32	574769
+External sort with BufferedStreams	4	65536	32	3357
+External sort with BufferedStreams	16	65536	32	19572
+External sort with BufferedStreams	64	65536	32	556386
+External sort with BufferedStreams	4	65536	32	3567
+External sort with BufferedStreams	16	65536	32	17544
+External sort with BufferedStreams	64	65536	32	570961
+External sort with BufferedStreams	4	65536	32	3501
+External sort with BufferedStreams	16	65536	32	17768
+External sort with BufferedStreams	64	65536	32	578071
+External sort with BufferedStreams	1024	16384	65536	32	6
+External sort with BufferedStreams	1024	32768	65536	32	5
+External sort with BufferedStreams	1024	65536	65536	32	206
+External sort with BufferedStreams	1024	131072	65536	32	78
+External sort with BufferedStreams	1024	262144	65536	32	123
+External sort with BufferedStreams	1024	524288	65536	32	240
+External sort with BufferedStreams	1024	1048576	65536	32	661
