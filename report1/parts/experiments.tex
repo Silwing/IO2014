@@ -5,7 +5,7 @@ During the first part of our testing we did in no way manage to get the expected
 We have however found a solution to the above problem, which gives results that fit the theory a lot better. By including an optimization flag for our compiler (in our case we used clang) not only did the running time decrease by roughly 1/3 but the results of the test cases also align better with the expected result. 
 
 \subsection{Stream implementations}
-The tests for our streams include testing different values of the buffersize $b$, the amount of streams $k$, and with $n = 100000000$ (for SingleItemStreams $n$ is only 100000 - it is simply too slow to consider a valid candidate, and therefore is discarded in the comparison). 
+The tests for our streams include testing different values of the buffersize $b$, the amount of streams $k$, and with $n = 100.000.000$ (for SingleItemStreams $n$ is only 100.000 - it is simply too slow to consider a valid candidate, and therefore is discarded in the comparison). 
 Each test has been run 100 times where the average is the values used in the graphs. 
 
 \subsubsection{SingleItemStream and FStream}
