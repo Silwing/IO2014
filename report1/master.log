@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.1415926-2.5-1.40.14 (TeX Live 2013/Debian) (format=latex 2014.9.25)  27 SEP 2014 15:33
+This is pdfTeX, Version 3.1415926-2.5-1.40.14 (TeX Live 2013/Debian) (format=latex 2014.9.25)  2 OCT 2014 00:09
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -1232,42 +1232,369 @@ LaTeX Font Info:    Font shape `OT1/ptm/bx/n' in size <9> not available
 LaTeX Font Info:    Font shape `OT1/ptm/bx/n' in size <7> not available
 (Font)              Font shape `OT1/ptm/b/n' tried instead on input line 46.
 
-(./parts/introduction.tex) (./parts/mergeSort-streams.tex)
-(./parts/d-way-merge.tex
-Underfull \hbox (badness 1354) in paragraph at lines 3--5
-[]\T1/lmr/m/n/12 ANSVAR: ras-mus...andreas? D-way
- []
+(./parts/introduction.tex) (./parts/mergeSort-streams.tex
+Underfull \vbox (badness 7759) has occurred while \output is active []
 
-) (./parts/mergeSort-external.tex
-Underfull \vbox (badness 7133) has occurred while \output is active []
+LaTeX Font Info:    Try loading font information for T1+txtt on input line 7.
 
- [1
+(/usr/share/texlive/texmf-dist/tex/latex/txfonts/t1txtt.fd
+File: t1txtt.fd 2000/12/15 v3.1
+) [1
 
 
 ])
-(./parts/experiments.tex) (./parts/comparisons.tex) (./parts/conclusion.tex)
+(./parts/d-way-merge.tex
+Underfull \vbox (badness 1237) has occurred while \output is active []
+
+)
+(./parts/mergeSort-external.tex) (./parts/experiments.tex [2]
+Underfull \hbox (badness 1152) in paragraph at lines 9--11
+\T1/lmr/m/n/12 ing dif-fer-ent val-ues of the buffer-size $\OML/lmm/m/it/12 b$\
+T1/lmr/m/n/12 ,
+ []
+
+
+! LaTeX Error: Cannot determine size of graphic in graphics/SIS.png (no Boundin
+gBox).
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.13 ...ludegraphics[width=90mm]{graphics/SIS.png}
+                                                  
+? 
+File: graphics/SIS.png Graphic file (type eps)
+<graphics/SIS.png>
+
+! LaTeX Error: Cannot determine size of graphic in graphics/FS.png (no Bounding
+Box).
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.14 \includegraphics[width=90mm]{graphics/FS.png}
+                                                  
+? 
+File: graphics/FS.png Graphic file (type eps)
+<graphics/FS.png>
+Underfull \hbox (badness 10000) in paragraph at lines 13--15
+[] []|\T1/lmr/bx/n/10 5.1.1. Sin-gleIt-em-Stream and FStream.[]
+ []
+
+
+Overfull \hbox (34.74792pt too wide) in paragraph at lines 13--15
+[]
+ []
+
+
+Overfull \hbox (34.74792pt too wide) in paragraph at lines 13--15
+[] 
+ []
+
+
 Underfull \vbox (badness 10000) has occurred while \output is active []
 
-Package atveryend Info: Empty hook `BeforeClearDocument' on input line 64.
- [2
 
-]
-Package atveryend Info: Empty hook `AfterLastShipout' on input line 64.
+Underfull \hbox (badness 10000) in paragraph at lines 23--24
+[] []|\T1/lmr/bx/n/10 5.1.2. Buffered-Streams and MMapped-
+ []
+
+
+! LaTeX Error: Cannot determine size of graphic in graphics/buffer_BS.png (no B
+oundingBox).
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.25 ...aphics[width=90mm]{graphics/buffer_BS.png}
+                                                  
+? 
+File: graphics/buffer_BS.png Graphic file (type eps)
+<graphics/buffer_BS.png>
+Overfull \hbox (52.81541pt too wide) in paragraph at lines 25--27
+[][]
+ []
+
+
+Underfull \vbox (badness 10000) has occurred while \output is active []
+
+ [3]
+
+! LaTeX Error: Cannot determine size of graphic in graphics/buffer_MMS.png (no 
+BoundingBox).
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.30 ...phics[width=90mm]{graphics/buffer_MMS.png}
+                                                  
+? 
+File: graphics/buffer_MMS.png Graphic file (type eps)
+<graphics/buffer_MMS.png>
+Overfull \hbox (52.81541pt too wide) in paragraph at lines 30--32
+[][]
+ []
+
+
+Underfull \vbox (badness 10000) has occurred while \output is active []
+
+
+
+! LaTeX Error: Cannot determine size of graphic in graphics/BS.png (no Bounding
+Box).
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.34 \includegraphics[width=90mm]{graphics/BS.png}
+                                                  
+? 
+File: graphics/BS.png Graphic file (type eps)
+<graphics/BS.png>
+
+! LaTeX Error: Cannot determine size of graphic in graphics/MMS.png (no Boundin
+gBox).
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.35 ...ludegraphics[width=90mm]{graphics/MMS.png}
+                                                  
+? 
+File: graphics/MMS.png Graphic file (type eps)
+<graphics/MMS.png>
+Overfull \hbox (52.81541pt too wide) in paragraph at lines 34--37
+[][]
+ []
+
+
+Overfull \hbox (34.74792pt too wide) in paragraph at lines 34--37
+[]
+ []
+
+
+Underfull \vbox (badness 10000) has occurred while \output is active []
+
+ [4]
+Underfull \hbox (badness 2088) in paragraph at lines 38--39
+[]\T1/lmr/m/n/12 The Buffered-Streams im-ple-men-ta-tion
+ []
+
+
+Underfull \hbox (badness 1028) in paragraph at lines 40--41
+[]\T1/lmr/m/n/12 The MMapped-Streams be-haves sim-i-
+ []
+
+
+! LaTeX Error: Cannot determine size of graphic in graphics/StreamCompare.png (
+no BoundingBox).
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.43 ...cs[width=90mm]{graphics/StreamCompare.png}
+                                                  
+? 
+File: graphics/StreamCompare.png Graphic file (type eps)
+<graphics/StreamCompare.png>
+Underfull \hbox (badness 10000) in paragraph at lines 43--45
+[] []|\T1/lmr/bx/n/10 5.1.3. Com-par-ing the streams.[]
+ []
+
+
+Overfull \hbox (34.74792pt too wide) in paragraph at lines 43--45
+[]
+ []
+
+
+Underfull \hbox (badness 2512) in paragraph at lines 43--45
+\T1/lmr/m/n/12 pl-men-taions con-tain only three of the
+ []
+
+
+Underfull \hbox (badness 1348) in paragraph at lines 43--45
+\T1/lmr/m/n/12 streams. The sin-gle item stream was
+ []
+
+
+Underfull \hbox (badness 6691) in paragraph at lines 43--45
+\T1/lmr/m/n/12 closer performance-wise as the graph
+ []
+
+
+Underfull \hbox (badness 1331) in paragraph at lines 43--45
+\T1/lmr/m/n/12 im-ple-men-ta-tion slightly out-per-forms the
+ []
+
+
+Underfull \hbox (badness 1603) in paragraph at lines 43--45
+\T1/txtt/m/n/12 mmap \T1/lmr/m/n/12 im-ple-men-ta-tion which is why we
+ []
+
+
+Underfull \vbox (badness 10000) has occurred while \output is active []
+
+
+
+! LaTeX Error: Cannot determine size of graphic in graphics/FindingParams.jpg (
+no BoundingBox).
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.54 ...cs[width=90mm]{graphics/FindingParams.jpg}
+                                                  
+? 
+File: graphics/FindingParams.jpg Graphic file (type eps)
+<graphics/FindingParams.jpg>
+Overfull \hbox (34.74792pt too wide) in paragraph at lines 52--56
+[]
+ []
+
+
+Underfull \hbox (badness 1755) in paragraph at lines 52--56
+\T1/lmr/m/n/12 big-ger than the phys-i-cal mem-ory, and
+ []
+
+[5]
+
+! LaTeX Error: Cannot determine size of graphic in graphics/MergeSortFixedM.png
+ (no BoundingBox).
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.60 ...[width=90mm]{graphics/MergeSortFixedM.png}
+                                                  
+? 
+File: graphics/MergeSortFixedM.png Graphic file (type eps)
+<graphics/MergeSortFixedM.png>
+Underfull \hbox (badness 10000) in paragraph at lines 59--61
+[]\T1/lmr/m/n/12 First we fix $\OML/lmm/m/it/12 m$ \T1/lmr/m/n/12 to 64K
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 59--61
+\T1/lmr/m/n/12 which gives the fol-low-ing graph:
+ []
+
+
+Overfull \hbox (34.74792pt too wide) in paragraph at lines 59--61
+[] 
+ []
+
+
+Underfull \vbox (badness 10000) has occurred while \output is active []
+
+
+
+! LaTeX Error: Cannot determine size of graphic in graphics/MergeSortFixedD.png
+ (no BoundingBox).
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.65 ...[width=90mm]{graphics/MergeSortFixedD.png}
+                                                  
+? 
+File: graphics/MergeSortFixedD.png Graphic file (type eps)
+<graphics/MergeSortFixedD.png>
+Underfull \hbox (badness 1394) in paragraph at lines 64--67
+[]\T1/lmr/m/n/12 Next we fix $\OML/lmm/m/it/12 d$ \T1/lmr/m/n/12 to 32 (lets us
+e the
+ []
+
+
+Underfull \hbox (badness 1072) in paragraph at lines 64--67
+\T1/lmr/m/n/12 best found) and that gives this graph:
+ []
+
+
+Overfull \hbox (34.74792pt too wide) in paragraph at lines 64--67
+[]
+ []
+
+
+Underfull \hbox (badness 1303) in paragraph at lines 64--67
+\T1/lmr/m/n/12 and again we per-fom a quick test for
+ []
+
+
+Underfull \hbox (badness 1199) in paragraph at lines 64--67
+\T1/lmr/m/n/12 to sort in-ter-nally) per-forms okay when
+ []
+
+
+Underfull \vbox (badness 10000) has occurred while \output is active []
+
+ [6])
+(./parts/comparisons.tex
+
+! LaTeX Error: Cannot determine size of graphic in graphics/compare.png (no Bou
+ndingBox).
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.9 ...egraphics[width=90mm]{graphics/compare.png}
+                                                  
+? 
+File: graphics/compare.png Graphic file (type eps)
+<graphics/compare.png>
+Overfull \hbox (52.81541pt too wide) in paragraph at lines 9--10
+[][] 
+ []
+
+
+Underfull \vbox (badness 10000) has occurred while \output is active []
+
+)
+(./parts/conclusion.tex
+Underfull \vbox (badness 10000) has occurred while \output is active []
+
+ [7])
+(./parts/program.tex
+Underfull \hbox (badness 1721) in paragraph at lines 17--18
+\T1/lmr/m/n/12 ment with ex-ter-nal, quick- or
+ []
+
+
+Underfull \hbox (badness 4713) in paragraph at lines 19--20
+[]\T1/lmr/m/n/12 check that the in-put-file is
+ []
+
+)
+Underfull \vbox (badness 10000) has occurred while \output is active []
+
+ [8]
+Package atveryend Info: Empty hook `BeforeClearDocument' on input line 61.
+Package atveryend Info: Empty hook `AfterLastShipout' on input line 61.
 
 (./master.aux)
-Package atveryend Info: Empty hook `AtVeryEndDocument' on input line 64.
-Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 64.
+Package atveryend Info: Empty hook `AtVeryEndDocument' on input line 61.
+Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 61.
 Package rerunfilecheck Info: File `master.out' has not changed.
-(rerunfilecheck)             Checksum: 07E465C11D9472351047080835CF7298;689.
-Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 64.
+(rerunfilecheck)             Checksum: 5C9077E0E881F5991145E750A65FCBAB;1149.
+Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 61.
  ) 
 Here is how much of TeX's memory you used:
- 24848 strings out of 493305
- 530744 string characters out of 6139897
- 733693 words of memory out of 5000000
- 27789 multiletter control sequences out of 15000+600000
- 42417 words of font info for 45 fonts, out of 8000000 for 9000
+ 24927 strings out of 493305
+ 532002 string characters out of 6139897
+ 734691 words of memory out of 5000000
+ 27845 multiletter control sequences out of 15000+600000
+ 45734 words of font info for 47 fonts, out of 8000000 for 9000
  957 hyphenation exceptions out of 8191
- 63i,10n,74p,721b,609s stack positions out of 5000i,500n,10000p,200000b,80000s
+ 63i,10n,74p,8676b,609s stack positions out of 5000i,500n,10000p,200000b,80000s
 
-Output written on master.dvi (2 pages, 14000 bytes).
+Output written on master.dvi (8 pages, 38236 bytes).
