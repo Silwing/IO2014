@@ -1,7 +1,5 @@
 #binaries
-bin/
-
-#main
+*.o
 main
 main.exe
 

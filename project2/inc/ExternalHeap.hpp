@@ -55,8 +55,11 @@ class ExternalHeap {
 					mergeBuffer[i + P] = insertBuffer[i];
 				}
 				
+				printf("this (before call): %p\n", this);
 				siftUp(node, P*m);
+				printf("this (after call):  %p\n", this);
 			}
+			printf("this (after if):    %p\n", this);
 			//printf("Insert buffer size: %lu \n", insertBuffer.size());
 			insertBuffer.clear();
 		}
@@ -67,16 +70,17 @@ class ExternalHeap {
 			unsigned int r, h, k, index = 0;
 			if (parent.getId() == 0) {
 				//parent is root
-				r = size + lastRecordInRoot;
+				h = lastRecordInRoot;
 			} else {
-				grandParent = storage->readNode(parent.getParent());
-				r = size + grandParent.getSizeOf(parent.getSiblingNumber());
+				unsigned int gp = parent.getParent();
+				unsigned int sn = parent.getSiblingNumber();
+				grandParent = storage->readNode(gp);
+				h = grandParent.getSizeOf(sn);
 			}
 			
 			storage->readPage(parent, 0, &mergeBuffer[0]);
 			E pivot = mergeBuffer[0];
-				
-			h = r - size;
+			r = size + h;
 			for (int i = 0; i < m * P; i++) {
 				if (mergeBuffer[i+P] >= pivot) {
 					h = r - i;
@@ -84,53 +88,34 @@ class ExternalHeap {
 				}
 			}
 			
-			//todo: write disk etc.
-			//if (h == r - size) return;
-			
 			k = h < P * m ? r - h : r - P * m;
 				
-			//printf("  k: %d\n", k);
-				
-			//printf("  MergeBuffer: ");
-			//for (int i = 0; i < (m + 1) * P; i++) {
-				//printf("%d ", mergeBuffer[i]);
-			//}
-			//printf("\n");
-				
 			while(index < k/P) {
-				qsort(&mergeBuffer[0], P + size, sizeof(E), compare);
+				qsort(&mergeBuffer, P + size, sizeof(E), compare);
 				storage->writePage(node, index++, &mergeBuffer[0]);	
-				//is not tested
-				/*if (index < k/P - 1) {
-					for (int i = 0; i < P; i++) {
-						if (i <= lastRecordInRoot % P) {
-							mergeBuffer[i] = rootPageBuffer[i];
-						} else {
-							size--;
-							mergeBuffer[i] = mergeBuffer[P + size];
-						}
-					}
-				}
-				else*/
+				
 				if (index < k/P)
 					storage->readPage(parent, index, &mergeBuffer[0]);
 			}
 				
-			storage->writeBlock(parent, &mergeBuffer[P]);
 			
 			if (parent.getId() == 0) {
+				storage->writeBlock(parent, &mergeBuffer[P]);
 				lastRecordInRoot = r - k;
 				unsigned int pageStartsAt = lastRecordInRoot / P * P;
 				for (int i = 0; i < lastRecordInRoot % P; i++) {
 					rootPageBuffer[i] = mergeBuffer[P + pageStartsAt + i];
 				}
 			} else {
+				//TODO: recurse
 				grandParent.setSizeOf(parent.getSiblingNumber(), r - k);
 				storage->writeNode(grandParent);
 			}
 			parent.setSizeOf(node.getSiblingNumber(), k);
 			storage->writeNode(node);
 			storage->writeNode(parent);
+			
+			printf("this (at endcall):  %p\n", this);
 		}
 		
 	public:

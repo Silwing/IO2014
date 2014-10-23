@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Pair.hpp"
+#include <cstdio>
 
 template<typename E, int m>
 class Node {
@@ -9,10 +10,19 @@ class Node {
 		unsigned int lastRecords[m];
 		
 	public:
-		Node() {	
+		Node() {
+			for (int i = 0; i < m; i++) {
+				lastRecords[i] = 0;
+			}
 		}
 		
 		Node(unsigned int id) : id(id) {
+			for (int i = 0; i < m; i++) {
+				lastRecords[i] = 0;
+			}
+		}
+		
+		~Node() {
 		}
 		
 		unsigned int getId() {

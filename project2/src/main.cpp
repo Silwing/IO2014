@@ -18,7 +18,7 @@ int main(int argc, char** argv) {
 	
 	for (int i = 0; i < 6 * PAGESIZE * FANOUT; i++) {
 		heap.insert(rand() % 10);
-		fprintf(stderr, "yeah %d/%d\n", i, 6*PAGESIZE * FANOUT);
+		fprintf(stderr, "yeah %d/%d\n", i+1, 6*PAGESIZE * FANOUT);
 	}
 	
 	//printf("digraph g {\n");
