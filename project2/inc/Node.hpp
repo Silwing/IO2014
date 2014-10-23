@@ -1,7 +1,7 @@
 #pragma once
 
-#include "Pair.hpp"
 #include <cstdio>
+#include "Exceptions.hpp"
 
 template<typename E, int m>
 class Node {
@@ -29,20 +29,16 @@ class Node {
 			return id;
 		}
 		
-		inline static unsigned int getParent(unsigned int id) {
+		unsigned int getParent() {
 			return (id - 1) / m;
 		}
 		
-		unsigned int getParent() {
-			return getParent(id);
-		}
-		
-		unsigned int getChildren(unsigned int child) {
+		unsigned int getChild(unsigned int child) {
 			return id*m + 1 + child;
 		}
 		
 		unsigned int getSiblingNumber() {
-			return (id-1)*((id - 1) / m * m);
+			return (id - 1) % m;
 		}
 		
 		unsigned int getSizeOf(unsigned int siblingNumber) {
@@ -50,6 +46,9 @@ class Node {
 		}
 		
 		void setSizeOf(unsigned int siblingNumber, unsigned int size) {
+			if (siblingNumber >= m) {
+				throw new IllegalArgumentException("Bad argument for Node::setSizeOf");
+			}
 			lastRecords[siblingNumber] = size;
 		}
 };

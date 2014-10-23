@@ -4,6 +4,7 @@ main
 main.exe
 
 #data etc
+data
 data/
 results.dat
 tmp/
@@ -12,3 +13,6 @@ tmp/
 *.dvi
 *.pdf
 *.ps
+*.png
+*.jpg
+*.jpeg

@@ -28,10 +28,8 @@ class ExternalHeap {
 			for (int i = 0; i < P * m; i ++) {
 				pop_heap(insertBuffer.begin(), insertBuffer.end() - i);
 			}
-			
 			if (lastLeaf == EMPTY_TREE) {
 				//Root case
-				//printf("Inserting in root\n");
 				lastLeaf = 0;
 				Node<E, m> node(lastLeaf);
 				storage->writeNode(node);
@@ -41,26 +39,16 @@ class ExternalHeap {
 				for (int i = 0; i < P; i++) {
 					rootPageBuffer[i] = insertBuffer[m*P-P + i];
 				}
-				//printf("  RootPageBuffer: ");
-				//for (int i = 0; i < P; i++) {
-				//	printf("%d ", rootPageBuffer[i]);
-				//}
-				//printf("\n");
 				storage->writeNode(node);
 			} else {
-				//printf("Inserting in node\n");
 				Node<E, m> node(++lastLeaf);
 				
 				for (int i = 0; i < insertBuffer.size(); i++) {
 					mergeBuffer[i + P] = insertBuffer[i];
 				}
 				
-				printf("this (before call): %p\n", this);
 				siftUp(node, P*m);
-				printf("this (after call):  %p\n", this);
 			}
-			printf("this (after if):    %p\n", this);
-			//printf("Insert buffer size: %lu \n", insertBuffer.size());
 			insertBuffer.clear();
 		}
 		
@@ -107,15 +95,15 @@ class ExternalHeap {
 					rootPageBuffer[i] = mergeBuffer[P + pageStartsAt + i];
 				}
 			} else {
-				//TODO: recurse
 				grandParent.setSizeOf(parent.getSiblingNumber(), r - k);
 				storage->writeNode(grandParent);
 			}
 			parent.setSizeOf(node.getSiblingNumber(), k);
 			storage->writeNode(node);
 			storage->writeNode(parent);
-			
-			printf("this (at endcall):  %p\n", this);
+			if (parent.getId() != 0) {
+				siftUp(parent, r - k);
+			}
 		}
 		
 	public:
@@ -132,9 +120,7 @@ class ExternalHeap {
 		}
 	
 		void insert(E e) {
-			//("Inserting %d\n", e);
 			insertBuffer.push_back(e);
-			//printf("  size: %zu\n", insertBuffer.size());
 			push_heap(insertBuffer.begin(), insertBuffer.end());
 			if (insertBuffer.size() == P * m) emptyInsertBuffer();
 		}

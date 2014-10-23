@@ -1,9 +1,10 @@
 CXX=clang
-CFLAGS= -c -O3 -Iinc -Wall -std=c++0x
+CFLAGS= -g -c -Iinc -Wall -std=c++0x
 LFLAGS= -lstdc++ -lm
 
 SRC_DIR=src
-SRC_FILES=	main.cpp	
+SRC_FILES=	main.cpp		\
+			Exceptions.cpp
                     
 SRC=$(addprefix $(SRC_DIR)/,$(SRC_FILES))
 
