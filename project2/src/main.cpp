@@ -7,13 +7,13 @@
 
 
 #define PAGESIZE 2
-#define MEMORY 8
+#define MEMORY 4
 #define FANOUT MEMORY/PAGESIZE
 
 
 void printNode(Node<int, FANOUT> node, AbstractStorage<int, PAGESIZE, FANOUT>* storage) {
 	int buf[FANOUT*PAGESIZE];
-	storage->readBlock(node, &buf[0]);
+	storage->readBlock(node, buf);
 	string buffer = to_string(buf[0]);
 	for (int i = 1; i < FANOUT*PAGESIZE; i++) {
 		buffer += ", " + to_string(buf[i]);
@@ -35,13 +35,21 @@ int main(int argc, char** argv) {
 		SimpleStorage<int, PAGESIZE, FANOUT> storage("data");
 		ExternalHeap<int, PAGESIZE, FANOUT> heap(&storage);
 		
-		for (int i = 0; i < 50 * PAGESIZE * FANOUT; i++) {
-			heap.insert(rand() % 100);
+		for (int i = 0; i < 3 * PAGESIZE * FANOUT + 3; i++) {
+			int j = rand() % 100;
+			printf("inserting %d\n", j);
+			heap.insert(j);
 		}
 		
-		printf("digraph g {\n");
-		printNode(storage.readNode(0), &storage);
-		printf("}\n");
+		//printf("digraph g {\n");
+		//printNode(storage.readNode(0), &storage);
+		//printf("}\n");
+		
+		for (int i = 0; i < 8; i++) {
+			int max = heap.deleteMax();
+			printf("max: %d\n", max);
+		}
+		
 	} catch (Exception e) {
 		printf("Exception thrown of type %s\n", e.getType());
 		printf("  %s\n", e.getMsg());

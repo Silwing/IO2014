@@ -6,6 +6,7 @@
 #include <cstdio>
 #include <cstdlib>
 #include "Node.hpp"
+#include "Pair.hpp"
 
 #define EMPTY_TREE UINT_MAX
 
@@ -15,11 +16,11 @@ template <typename E, int P, int m>
 class ExternalHeap {
 	private:
 		E mergeBuffer[(2 * m + 1) * P];
-		unsigned int mergeHeap[m];
+		vector<Pair<unsigned int, unsigned int> > mergeHeap;
 		vector<E> insertBuffer;
 		
 		unsigned int lastLeaf;
-		unsigned int lastRecordInRoot;
+		unsigned int rootSize;
 		E rootPageBuffer[P];
 		
 		AbstractStorage<E, P, m>* storage;
@@ -35,7 +36,7 @@ class ExternalHeap {
 				storage->writeNode(node);
 				storage->writeBlock(node, &insertBuffer[0]);
 				
-				lastRecordInRoot = m * P;
+				rootSize = m * P;
 				for (int i = 0; i < P; i++) {
 					rootPageBuffer[i] = insertBuffer[m*P-P + i];
 				}
@@ -58,7 +59,7 @@ class ExternalHeap {
 			unsigned int r, h, k, index = 0;
 			if (parent.getId() == 0) {
 				//parent is root
-				h = lastRecordInRoot;
+				h = rootSize;
 			} else {
 				unsigned int gp = parent.getParent();
 				unsigned int sn = parent.getSiblingNumber();
@@ -89,9 +90,9 @@ class ExternalHeap {
 			
 			if (parent.getId() == 0) {
 				storage->writeBlock(parent, &mergeBuffer[P]);
-				lastRecordInRoot = r - k;
-				unsigned int pageStartsAt = lastRecordInRoot / P * P;
-				for (int i = 0; i < lastRecordInRoot % P; i++) {
+				rootSize = r - k;
+				unsigned int pageStartsAt = (rootSize - 1) / P * P;
+				for (int i = 0; i < P; i++) {
 					rootPageBuffer[i] = mergeBuffer[P + pageStartsAt + i];
 				}
 			} else {
@@ -106,9 +107,64 @@ class ExternalHeap {
 			}
 		}
 		
+		void rebalance(int nodeId) {
+			if (nodeId == lastLeaf) return;
+			
+			Node<E, m> node = storage->readNode(nodeId);
+			for (int i = 0; i < m; i++) {
+				int c = node.getChild(i);
+				if (c > lastLeaf) {
+					break;
+				}
+				unsigned int size = node.getSizeOf(i);
+				unsigned int pageIndex = (size - 1) / P * P - 1;
+				unsigned int pageSize = (size - 1) % P;
+				mergeHeap.push_back(Pair<unsigned int, unsigned int> (i, pageSize));
+				storage->readPage(c, pageIndex, &mergeBuffer[i*P]);
+			}
+			
+			auto buf = mergeBuffer;
+			printf("MergeBuffer:");
+			for (int i = 0; i < P*m; i++) {
+				printf(" %d", buf[i]);
+			}
+			printf("\n");
+			
+			auto cmp = [buf](Pair<unsigned int, unsigned int> p1, Pair<unsigned int, unsigned int>p2) {
+				E e1 = buf[p1.fst * P + p1.snd];
+				E e2 = buf[p2.fst * P + p2.snd];
+				printf("Comparing %d and %d: %d\n", e1, e2, e1 < e2);
+				if (e1 > e2) {
+					printf("returning -1\n");
+					return -1;
+				} 
+				if (e1 == e2) {
+					printf("returning 0\n");
+					return 0;
+				}
+				printf("returning 1\n");
+				return 1;
+			};
+			
+			printf("MergeHeap:");
+			for (int i = 0; i < m; i++) {
+				printf(" (%d,%d)", mergeHeap[i].fst, mergeHeap[i].snd); 
+			}
+			printf("\n");
+			
+			make_heap(mergeHeap.begin(), mergeHeap.end(), cmp);
+			
+			printf("MergeHeap:");
+			for (int i = 0; i < m; i++) {
+				printf(" (%d,%d)", mergeHeap[i].fst, mergeHeap[i].snd); 
+			}
+			printf("\n");
+		}
+		
 	public:
 		ExternalHeap(AbstractStorage<E, P, m>* storage) : storage(storage) {
 			lastLeaf = EMPTY_TREE;
+			rootSize = 0;
 		}
 		
 		static int compare(const void* p1, const void* p2) {
@@ -126,6 +182,44 @@ class ExternalHeap {
 		}
 		
 		E deleteMax() {
+			E res;
+			if (insertBuffer.size() == 0 && rootSize == 0) {
+				throw new EmptyTreeException("You cannot delete an element from an empty tree");
+			} else if (rootSize == 0) {
+				res = insertBuffer[0];
+				pop_heap(insertBuffer.begin(), insertBuffer.end());
+				insertBuffer.pop_back();
+				return res; //DO NOT TRY TO REBALANCE EMPTY TREE!!
+			} else if (insertBuffer.size() == 0) {
+				rootSize--;
+				res = rootPageBuffer[rootSize % P];
+			} else {
+				E e1 = insertBuffer[0];
+				E e2 = rootPageBuffer[(rootSize - 1) % P];
+				printf("RootPageBuffer:");
+				for (int i = 0; i < P; i++) {
+					printf(" %d", rootPageBuffer[i]);
+				}
+				printf("\n");
+				printf("ib[0]: %d, pb[0]: %d\n", e1, e2);
+				if (e1 > e2) {
+					res = e1;
+					pop_heap(insertBuffer.begin(), insertBuffer.end());
+					insertBuffer.pop_back();
+				} else {
+					rootSize--;
+					res = e2;
+				}
+			}
 			
+			
+			if (rootSize % P == 0) {	
+				storage->readPage(0, rootSize / P - 1, rootPageBuffer);
+				if (rootSize < P * m / 2) {
+					rebalance(0);
+				}
+			}
+			
+			return res;
 		}
 };

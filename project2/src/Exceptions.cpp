@@ -13,5 +13,10 @@ const char* Exception::getMsg() {
 
 
 IllegalArgumentException::IllegalArgumentException(const char* msg) : Exception(msg, "IllegalArgumentException") {
-	
+}
+
+EmptyTreeException::EmptyTreeException(const char* msg) : Exception(msg, "EmptyTreeException") {	
+}
+
+NotImplementedYetException::NotImplementedYetException(const char* msg) : Exception(msg, "NotImplementedYetException") {
 }

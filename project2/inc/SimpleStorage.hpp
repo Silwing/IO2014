@@ -26,15 +26,11 @@ class SimpleStorage : public AbstractStorage<E, P, m> {
 			return node;
 		}
 		
-		void writeNode(Node<E, m> node) {
+		void writeNode(Node<E, m>& node) {
 			size_t size = sizeof(Node<E, m>);
 			size_t offset = size + P * m * sizeof(E);
 			lseek(fd, node.getId()*offset, SEEK_SET);
 			write(fd, (void*) &node, size);
-		}
-		
-		void readPage(Node<E, m> node, unsigned int index, E* dest) {
-			readPage(node.getId(), index, dest);
 		}
 		
 		void readPage(unsigned int node, unsigned int index, E* dest) {
@@ -44,10 +40,6 @@ class SimpleStorage : public AbstractStorage<E, P, m> {
 			read(fd, (void*) dest, P * sizeof(E)); 
 		}
 		
-		void readBlock(Node<E, m> node, E* dest) {
-			readBlock(node.getId(), dest);
-		}
-		
 		void readBlock(unsigned int node, E* dest) {
 			size_t size = sizeof(Node<E, m>);
 			size_t offset = size + P * m * sizeof(E);
@@ -55,19 +47,11 @@ class SimpleStorage : public AbstractStorage<E, P, m> {
 			read(fd, (void*) dest, P * m * sizeof(E)); 
 		}
 		
-		void writePage(Node<E, m> node, unsigned int index, E* src) {
-			writePage(node.getId(), index, src);
-		}
-		
 		void writePage(unsigned int node, unsigned int index, E* src) {
 			size_t size = sizeof(Node<E, m>);
 			size_t offset = size + P * m * sizeof(E);
 			lseek(fd, node*offset + size + index * P * sizeof(E), SEEK_SET);
 			write(fd, (void*) src, P * sizeof(E)); 
-		}
-		
-		void writeBlock(Node<E, m> node, E* src) {
-			writeBlock(node.getId(), src);
 		}
 		
 		void writeBlock(unsigned int node, E* src) {

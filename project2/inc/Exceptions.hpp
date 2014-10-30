@@ -17,3 +17,13 @@ class IllegalArgumentException : public Exception {
 	public:
 		IllegalArgumentException(const char* msg);
 };
+
+class EmptyTreeException : public Exception {
+	public:
+		EmptyTreeException(const char* msg);
+};
+
+class NotImplementedYetException : public Exception {
+	public:
+		NotImplementedYetException(const char* msg);
+};
