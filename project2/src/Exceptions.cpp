@@ -20,3 +20,6 @@ EmptyTreeException::EmptyTreeException(const char* msg) : Exception(msg, "EmptyT
 
 NotImplementedYetException::NotImplementedYetException(const char* msg) : Exception(msg, "NotImplementedYetException") {
 }
+
+IllegalStateException::IllegalStateException(const char* msg) : Exception(msg, "IllegalStateException"){
+}

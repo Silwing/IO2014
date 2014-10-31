@@ -7,18 +7,18 @@ template<typename E, int m>
 class Node {
 	private:
 		unsigned int id;
-		unsigned int lastRecords[m];
+		unsigned int childrenSizes[m];
 		
 	public:
 		Node() {
 			for (int i = 0; i < m; i++) {
-				lastRecords[i] = 0;
+				childrenSizes[i] = 0;
 			}
 		}
 		
 		Node(unsigned int id) : id(id) {
 			for (int i = 0; i < m; i++) {
-				lastRecords[i] = 0;
+				childrenSizes[i] = 0;
 			}
 		}
 		
@@ -42,13 +42,13 @@ class Node {
 		}
 		
 		unsigned int getSizeOf(unsigned int siblingNumber) {
-			return lastRecords[siblingNumber];
+			return childrenSizes[siblingNumber];
 		}
 		
 		void setSizeOf(unsigned int siblingNumber, unsigned int size) {
 			if (siblingNumber >= m) {
 				throw new IllegalArgumentException("Bad argument for Node::setSizeOf");
 			}
-			lastRecords[siblingNumber] = size;
+			childrenSizes[siblingNumber] = size;
 		}
 };

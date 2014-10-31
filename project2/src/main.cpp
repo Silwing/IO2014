@@ -35,19 +35,19 @@ int main(int argc, char** argv) {
 		SimpleStorage<int, PAGESIZE, FANOUT> storage("data");
 		ExternalHeap<int, PAGESIZE, FANOUT> heap(&storage);
 		
-		for (int i = 0; i < 3 * PAGESIZE * FANOUT + 3; i++) {
+		for (int i = 0; i < 3 * PAGESIZE * FANOUT; i++) {
 			int j = rand() % 100;
 			printf("inserting %d\n", j);
 			heap.insert(j);
 		}
 		
-		//printf("digraph g {\n");
-		//printNode(storage.readNode(0), &storage);
-		//printf("}\n");
-		
-		for (int i = 0; i < 8; i++) {
+		printf("digraph g {\n");
+		printNode(storage.readNode(0), &storage);
+		printf("}\n");
+        
+		for (int i = 0; i < 15; i++) {
 			int max = heap.deleteMax();
-			printf("max: %d\n", max);
+			printf("\t\tmax: %d\n", max);
 		}
 		
 	} catch (Exception e) {

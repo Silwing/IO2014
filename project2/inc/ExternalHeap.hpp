@@ -107,58 +107,124 @@ class ExternalHeap {
 			}
 		}
 		
-		void rebalance(int nodeId) {
+		void rebalance(unsigned int nodeId, unsigned int* nodeSize) {
+            printf("Rebalancing node %d\n", nodeId);
 			if (nodeId == lastLeaf) return;
 			
 			Node<E, m> node = storage->readNode(nodeId);
+            
+            if(node.getChild(0) > lastLeaf) {
+                Node<E, m> leaf(lastLeaf);
+                Node<E, m> parent = storage->readNode(leaf.getParent());
+                
+                unsigned int x = parent.getSizeOf(leaf.getSiblingNumber());
+                unsigned int s = x + *nodeSize;
+                
+                if (s > P*m) {
+                    throw new NotImplementedYetException("Steal from last leaf");
+                } else if (s < P * m / 2) {
+                    throw new NotImplementedYetException("Steal everything from lastLeaf, make new last leaf and repeat");
+                } else {
+                    //Steal everything from lastLeaf and make new last leaf.
+                    storage->readBlock(node, &mergeBuffer[P]);
+                    for (int i = 0; i < (x - 1)/P + 1; i++) {
+                        storage->readPage(leaf, i, &mergeBuffer[P + *nodeSize + i * P]);
+                    }
+                    qsort(&mergeBuffer[P], s, sizeof(E), compare);
+                    lastLeaf--;
+                    siftUp(node, s);
+                }
+                
+                return;
+            }
+            
+            //move elements
+            storage->readBlock(nodeId, mergeBuffer);
+            for (int i = 0; i < P * m / 2; i++) {
+                mergeBuffer[i + P*m / 2] = mergeBuffer[i];
+            }
+            storage->writeBlock(nodeId, mergeBuffer);
+            
+            //read children
 			for (int i = 0; i < m; i++) {
 				int c = node.getChild(i);
 				if (c > lastLeaf) {
 					break;
 				}
 				unsigned int size = node.getSizeOf(i);
-				unsigned int pageIndex = (size - 1) / P * P - 1;
-				unsigned int pageSize = (size - 1) % P;
-				mergeHeap.push_back(Pair<unsigned int, unsigned int> (i, pageSize));
+				unsigned int pageIndex = (size - 1) / P;
+				mergeHeap.push_back(Pair<unsigned int, unsigned int> (i, size));
 				storage->readPage(c, pageIndex, &mergeBuffer[i*P]);
 			}
 			
-			auto buf = mergeBuffer;
-			printf("MergeBuffer:");
-			for (int i = 0; i < P*m; i++) {
-				printf(" %d", buf[i]);
-			}
-			printf("\n");
-			
+            //compare function for heap
+			auto buf = mergeBuffer; //this is for use of closure
 			auto cmp = [buf](Pair<unsigned int, unsigned int> p1, Pair<unsigned int, unsigned int>p2) {
-				E e1 = buf[p1.fst * P + p1.snd];
-				E e2 = buf[p2.fst * P + p2.snd];
-				printf("Comparing %d and %d: %d\n", e1, e2, e1 < e2);
-				if (e1 > e2) {
-					printf("returning -1\n");
-					return -1;
-				} 
-				if (e1 == e2) {
-					printf("returning 0\n");
-					return 0;
-				}
-				printf("returning 1\n");
-				return 1;
+				E e1 = buf[p1.fst * P + (p1.snd - 1) % P];
+				E e2 = buf[p2.fst * P + (p2.snd - 1) % P];
+                return e1 < e2;
 			};
 			
-			printf("MergeHeap:");
-			for (int i = 0; i < m; i++) {
-				printf(" (%d,%d)", mergeHeap[i].fst, mergeHeap[i].snd); 
-			}
-			printf("\n");
-			
+            //initial heap
 			make_heap(mergeHeap.begin(), mergeHeap.end(), cmp);
-			
-			printf("MergeHeap:");
-			for (int i = 0; i < m; i++) {
-				printf(" (%d,%d)", mergeHeap[i].fst, mergeHeap[i].snd); 
-			}
-			printf("\n");
+            
+            //TODO: what if node only have one child?
+            
+            //read the first P*m/2 elements from heap
+            for (int i = 0; i < P * m / 2; i++) {
+                Pair<unsigned int, unsigned int> top = mergeHeap[0];
+                int n = mergeBuffer[top.fst * P + (top.snd - 1) % P];
+                mergeBuffer[P*m + P - i % P - 1] = n;
+                if ((i+1) % P == 0) {
+                    //print last page
+                    printf("Merged page:");
+                    for (int j = 0; j < P; j++) {
+                        printf(" %d", mergeBuffer[P*m + j]);
+                    }
+                    printf("\n");
+                    unsigned int offset = m/2 - i/P - 1;
+                    storage->writePage(nodeId, offset, &mergeBuffer[P*m]);
+                }
+                if (top.snd == 0) {
+                    if (node.getChild(top.fst) == lastLeaf) {
+                        lastLeaf--;
+                    } else {
+                        throw new IllegalStateException("There should be plenty of elements to fetch from child");
+                    }
+                    pop_heap(mergeHeap.begin(), mergeHeap.end(), cmp);
+                    mergeHeap.pop_back();
+                } else {
+                    top.snd--;
+                    
+                    if ((top.snd) % P == 0) {
+                        storage->readPage(node.getChild(top.fst), (top.snd - 1) / P, &mergeBuffer[top.fst*P]);
+                    }
+                    mergeHeap[0] = top;
+                    pop_heap(mergeHeap.begin(), mergeHeap.end(), cmp);
+                    push_heap(mergeHeap.begin(), mergeHeap.end(), cmp);
+                }
+                
+            }
+            
+            *nodeSize += P*m / 2;
+            
+            for (int i = 0; i < mergeHeap.size(); i++) {
+                Pair<unsigned int, unsigned int> pair = mergeHeap[i];
+                printf("Size of node %d: %d\n", pair.fst, pair.snd);
+                node.setSizeOf(pair.fst, pair.snd);
+            }
+            mergeHeap.clear();
+            storage->writeNode(node);
+            for (int i = 0; i < m; i++) {
+                unsigned int child = node.getChild(i);
+                if (child > lastLeaf) break;
+                unsigned int childSize = node.getSizeOf(i);
+                if (childSize < P*m/2) {
+                    rebalance(child, &childSize);
+                    node.setSizeOf(i, childSize);
+                }
+            }
+            storage->writeNode(node);
 		}
 		
 	public:
@@ -182,7 +248,8 @@ class ExternalHeap {
 		}
 		
 		E deleteMax() {
-			E res;
+            E res;
+            printf("RootSize: %d\n", rootSize);
 			if (insertBuffer.size() == 0 && rootSize == 0) {
 				throw new EmptyTreeException("You cannot delete an element from an empty tree");
 			} else if (rootSize == 0) {
@@ -215,10 +282,12 @@ class ExternalHeap {
 			
 			if (rootSize % P == 0) {	
 				storage->readPage(0, rootSize / P - 1, rootPageBuffer);
-				if (rootSize < P * m / 2) {
-					rebalance(0);
-				}
-			}
+            }
+            if (rootSize < P * m / 2) {
+                printf("rootSize %d\n", rootSize);
+                rebalance(0, &rootSize);
+                printf("rootSize %d\n", rootSize);
+            }
 			
 			return res;
 		}

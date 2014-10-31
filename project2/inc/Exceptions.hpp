@@ -24,6 +24,11 @@ class EmptyTreeException : public Exception {
 };
 
 class NotImplementedYetException : public Exception {
-	public:
-		NotImplementedYetException(const char* msg);
+    public:
+        NotImplementedYetException(const char* msg);
+};
+
+class IllegalStateException : public Exception {
+    public:
+        IllegalStateException(const char* msg);
 };
