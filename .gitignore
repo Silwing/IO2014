@@ -16,3 +16,6 @@ tmp/
 *.png
 *.jpg
 *.jpeg
+
+#xcode filed
+*.xcodeproj
