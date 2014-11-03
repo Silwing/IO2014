@@ -1,0 +1,10 @@
+Rebalance:
+	leaf/only-child
+		- s > Pm (Andreas)
+			- aligned
+			- unaligned
+		- Pm/2 < s < Pm (Randi)
+		- s < Pm/2 (Randi)
+
+	node
+		- m > 2 og 1 < children < m (begge)
