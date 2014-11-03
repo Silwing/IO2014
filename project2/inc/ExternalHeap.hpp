@@ -78,6 +78,11 @@ class ExternalHeap {
 					break;
 				}
 			}
+            
+            if (h == parentSize) {
+                storage->writeBlock(node, &mergeBuffer[P]);
+                return;
+            }
 			
 			k = h < P * m ? r - h : r - P * m;
 				
@@ -112,14 +117,17 @@ class ExternalHeap {
 			}
 		}
     
-    inline void rebalance(unsigned int nodeId, unsigned int* nodeSize) {
-        Node<E, m> node = storage->readNode(nodeId);
-        rebalance(node, nodeSize);
-    }
+        inline void rebalance(unsigned int nodeId, unsigned int* nodeSize) {
+            Node<E, m> node = storage->readNode(nodeId);
+            rebalance(node, nodeSize);
+        }
     
 		void rebalance(Node<E, m> node, unsigned int* nodeSize) {
             unsigned int nodeId = node.getId();
-			if (node.getId() == lastLeaf) return;
+            if (node.getId() == lastLeaf) {
+                if (*nodeSize == 0) lastLeaf--;
+                return;
+            }
             
             if(node.getChild(0) >= lastLeaf) {
                 Node<E, m> leaf(lastLeaf);
