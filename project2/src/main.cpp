@@ -36,7 +36,7 @@ int main(int argc, char** argv) {
 		ExternalHeap<int, PAGESIZE, FANOUT> heap(&storage);
 		
 		for (int i = 0; i < 3 * PAGESIZE * FANOUT; i++) {
-			int j = rand() % 100;
+			int j = 100 - i;
 			printf("inserting %d\n", j);
 			heap.insert(j);
 		}
@@ -45,7 +45,7 @@ int main(int argc, char** argv) {
 		printNode(storage.readNode(0), &storage);
 		printf("}\n");
         
-		for (int i = 0; i < 15; i++) {
+		for (int i = 0; i < 3 * PAGESIZE * FANOUT; i++) {
 			int max = heap.deleteMax();
 			printf("\t\tmax: %d\n", max);
 		}

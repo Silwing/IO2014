@@ -15,7 +15,7 @@ using namespace std;
 template <typename E, int P, int m>
 class ExternalHeap {
 	private:
-		E mergeBuffer[(2 * m + 1) * P];
+		E mergeBuffer[(m + 2) * P];
 		vector<Pair<unsigned int, unsigned int> > mergeHeap;
 		vector<E> insertBuffer;
 		
@@ -54,23 +54,25 @@ class ExternalHeap {
 		}
 		
 		void siftUp(Node<E, m> node, unsigned int size) {
+            if (node.getId() == 0) throw new IllegalStateException("Root cannot be sifted up");
 			Node<E, m> parent = storage->readNode(node.getParent());
 			Node<E, m> grandParent;
-			unsigned int r, h, k, index = 0;
+			unsigned int r, h, k, parentSize, index = 0;
 			if (parent.getId() == 0) {
 				//parent is root
-				h = rootSize;
+				parentSize = rootSize;
 			} else {
 				unsigned int gp = parent.getParent();
 				unsigned int sn = parent.getSiblingNumber();
 				grandParent = storage->readNode(gp);
-				h = grandParent.getSizeOf(sn);
+				parentSize = grandParent.getSizeOf(sn);
 			}
+            h = parentSize;
 			
 			storage->readPage(parent, 0, &mergeBuffer[0]);
 			E pivot = mergeBuffer[0];
 			r = size + h;
-			for (int i = 0; i < m * P; i++) {
+			for (int i = 0; i < size; i++) {
 				if (mergeBuffer[i+P] >= pivot) {
 					h = r - i;
 					break;
@@ -79,15 +81,18 @@ class ExternalHeap {
 			
 			k = h < P * m ? r - h : r - P * m;
 				
-			while(index < k/P) {
+			while(index < (k + P - 1)/P) {
 				qsort(&mergeBuffer, P + size, sizeof(E), compare);
 				storage->writePage(node, index++, &mergeBuffer[0]);	
 				
-				if (index < k/P)
+				if (index < (k + P - 1)/P)
 					storage->readPage(parent, index, &mergeBuffer[0]);
 			}
 				
-			
+            for (int i = index * P; i < parentSize; i += P) {
+                storage->readPage(parent, i/P, &mergeBuffer[P + size - k + i]);
+            }
+            
 			if (parent.getId() == 0) {
 				storage->writeBlock(parent, &mergeBuffer[P]);
 				rootSize = r - k;
@@ -106,35 +111,66 @@ class ExternalHeap {
 				siftUp(parent, r - k);
 			}
 		}
-		
-		void rebalance(unsigned int nodeId, unsigned int* nodeSize) {
-            printf("Rebalancing node %d\n", nodeId);
-			if (nodeId == lastLeaf) return;
-			
-			Node<E, m> node = storage->readNode(nodeId);
+    
+    inline void rebalance(unsigned int nodeId, unsigned int* nodeSize) {
+        Node<E, m> node = storage->readNode(nodeId);
+        rebalance(node, nodeSize);
+    }
+    
+		void rebalance(Node<E, m> node, unsigned int* nodeSize) {
+            unsigned int nodeId = node.getId();
+			if (node.getId() == lastLeaf) return;
             
-            if(node.getChild(0) > lastLeaf) {
+            if(node.getChild(0) >= lastLeaf) {
                 Node<E, m> leaf(lastLeaf);
                 Node<E, m> parent = storage->readNode(leaf.getParent());
                 
                 unsigned int x = parent.getSizeOf(leaf.getSiblingNumber());
                 unsigned int s = x + *nodeSize;
                 
+                storage->readBlock(node, &mergeBuffer[P]);
                 if (s > P*m) {
-                    throw new NotImplementedYetException("Steal from last leaf");
-                } else if (s < P * m / 2) {
-                    throw new NotImplementedYetException("Steal everything from lastLeaf, make new last leaf and repeat");
+                    //Steal from last leaf
+                    if (x % P == 0) {
+                        for (int i = 0; i < m / 2; i++) {
+                            storage->readPage(leaf, x/P - m/2 + i , &mergeBuffer[P + *nodeSize + i * P]);
+                        }
+                    } else {
+                        for (int i = 0; i < m / 2 + 1; i++) {
+                            storage->readPage(leaf, (x + P -1)/P - m/2 - 1 + i , &mergeBuffer[P + *nodeSize + i * P]);
+                        }
+                        //align
+                        for (int i = 0; i < P * m/2; i++) {
+                            mergeBuffer[P + *nodeSize + i] = mergeBuffer[P + *nodeSize + i + x % P];
+                        }
+                    }
+                    
+                    *nodeSize += P*m/2;
+                    qsort(&mergeBuffer[P], *nodeSize, sizeof(E), compare);
+                    parent.setSizeOf(leaf.getSiblingNumber(), x - P*m/2);
+                    storage->writeNode(parent);
+                    if (nodeId == 0) {
+                        storage->writeBlock(node, &mergeBuffer[P]);
+                    } else {
+                        siftUp(node, *nodeSize);
+                    }
                 } else {
                     //Steal everything from lastLeaf and make new last leaf.
-                    storage->readBlock(node, &mergeBuffer[P]);
                     for (int i = 0; i < (x - 1)/P + 1; i++) {
                         storage->readPage(leaf, i, &mergeBuffer[P + *nodeSize + i * P]);
                     }
                     qsort(&mergeBuffer[P], s, sizeof(E), compare);
                     lastLeaf--;
-                    siftUp(node, s);
+                    if (nodeId == 0) {
+                        storage->writeBlock(node, &mergeBuffer[P]);
+                    } else {
+                        siftUp(node, s);
+                    }
+                    *nodeSize += x;
+                    if (*nodeSize < P*m/2) {
+                        rebalance(node, nodeSize);
+                    }
                 }
-                
                 return;
             }
             
@@ -167,8 +203,6 @@ class ExternalHeap {
 			
             //initial heap
 			make_heap(mergeHeap.begin(), mergeHeap.end(), cmp);
-            
-            //TODO: what if node only have one child?
             
             //read the first P*m/2 elements from heap
             for (int i = 0; i < P * m / 2; i++) {
