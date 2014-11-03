@@ -69,3 +69,20 @@ void testSiftUpToNode(AbstractStorage<int, P, m>* storage) {
     test(storage, input, output, "testSiftUpToNode");
     
 }
+
+template<int P, int m>
+void testSorting(AbstractStorage<int, P, m>* storage) {
+    ExternalHeap<int, P, m> heap(storage);
+    int size = 50;
+    for (int i = 0; i < size; i++) {
+        heap.insert(rand() % 1000000);
+    }
+    int max = heap.deleteMax();
+    for (int i = 1; i < size; i++) {
+        int next = heap.deleteMax();
+        if (next > max) throw new Exception("BadTestResult", "is not sorted");
+        max = next;
+    }
+    printf("Sorting done. Throwing exception\n");
+    heap.deleteMax();
+}
