@@ -22,11 +22,11 @@ void printNode(Node<int, m> node, AbstractStorage<int, P, m>* storage, int nodeS
     printf("\"%d\" [\n  label = \"Node %d | %s \"\n  shape=\"record\"\n];\n", node.getId(), node.getId(), buffer.c_str());
 
     for (int i = 0; i < m; i++) {
-        int childSize = node.getSizeOf(i);
-        if (childSize != 0) {
+        unsigned int s = node.getSizeOf(i);
+        if (s > 0) {
             Node<int, m> child = storage->readNode(node.getChild(i));
             printf("\"%d\" -> \"%d\"\n", node.getId(), child.getId());
-            printNode(child, storage, childSize);
+            printNode(child, storage, s);
         }
     }
 }
@@ -37,9 +37,8 @@ void test(AbstractStorage<int, P, m>* storage, vector<int> input, vector<int> ou
     for (int i = 0; i < input.size(); i++) {
         heap.insert(input[i]);
     }
-
     printHeap(&heap, storage);
-    printf("Starting test: %s\n", msg);
+    fprintf(stderr, "Starting test: %s\n", msg);
 
     for (int i = 0; i < output.size(); i++) {
         int j = heap.deleteMax();
@@ -49,7 +48,7 @@ void test(AbstractStorage<int, P, m>* storage, vector<int> input, vector<int> ou
         sprintf(str, "Bad test. Got %d, expected %d", j, output[i]);
         throw new Exception(str, msg);
     }
-    printf("%s passed\n", msg);
+    fprintf(stderr, "%s passed\n", msg);
 }
 
 template<int P, int m>
@@ -60,8 +59,7 @@ void testSiftUpToRoot(AbstractStorage<int, P, m>* storage) {
 
     vector<int> output(input.begin(), input.end());
     reverse(output.begin(), output.end());
-
-    test(storage, input, output, "testSiftUpToRoot");
+    test(storage, input, output, "testSiftUpToRoot and aligned last page");
 }
 
 template<int P, int m>
@@ -72,9 +70,8 @@ void testSiftUpToNode(AbstractStorage<int, P, m>* storage) {
 
     vector<int> output(input.begin(), input.end());
     reverse(output.begin(), output.end());
-
-    test(storage, input, output, "testSiftUpToNode");
-
+        
+    test(storage, input, output, "testSiftUpToNode and aligned last page");
 }
 
 template<int P, int m>
@@ -108,5 +105,42 @@ void testSorting(AbstractStorage<int, P, m>* storage) {
         }
         max = next;
     }
-    //printf("Sorting done. Throwing exception\n");
+    fprintf(stderr, "Sorting done. Throwing exception\n");
+    heap.deleteMax();
+}
+
+template<int P, int m>
+void testForUnalignedLastPage(AbstractStorage<int, P, m>* storage) {
+    ExternalHeap<int, P, m> heap(storage);
+    for (int i = 0; i < 1000000; i++) {
+        int limit = rand() % 10 + 1;
+        printf("Inserting %d ints\n", limit);
+        for (int j = 0; j < limit; j++) {
+            heap.insert(rand() % 10000);
+        }
+        limit = rand() % limit;
+        printf("Deleting %d ints\n", limit);
+        for (int j = 0; j < limit; j++) {
+            heap.deleteMax();
+        }
+    }
+}
+
+template<int P, int m>
+void testUnalignedLastPage(AbstractStorage<int, P, m>* storage) {
+    ExternalHeap<int, P, m> heap(storage);
+    
+    
+    vector<int> input;
+    for (int i = 0; i < P * m * (m + 2); i++)
+        input.push_back(100-i);
+    
+    input[P*m*3+4] = 90;
+    
+    vector<int> output(input.begin(), input.end());
+    sort(output.begin(), output.end());
+    reverse(output.begin(), output.end());
+    
+    
+    test(storage, input, output, "Unaligned last page");
 }

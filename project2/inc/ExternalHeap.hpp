@@ -80,6 +80,9 @@ class ExternalHeap {
 			}
 
             if (h == parentSize) {
+                parent.setSizeOf(node.getSiblingNumber(), size);
+                storage->writeNode(node);
+                storage->writeNode(parent);
                 storage->writeBlock(node, &mergeBuffer[P]);
                 storage->writeNode(node);
                 parent.setSizeOf(node.getSiblingNumber(), size);
@@ -222,14 +225,15 @@ class ExternalHeap {
                 mergeBuffer[P*m + P - i % P - 1] = n;
                 if ((i+1) % P == 0) {
                     //print last page
-                    /*printf("Merged page:");
+                    /*fprintf(stderr, "Merged page:");
                     for (int j = 0; j < P; j++) {
-                        printf(" %d", mergeBuffer[P*m + j]);
+                        fprintf(stderr, " %d", mergeBuffer[P*m + j]);
                     }
-                    printf("\n");*/
+                    fprintf(stderr, "\n");*/
                     unsigned int offset = m/2 - i/P - 1;
                     storage->writePage(nodeId, offset, &mergeBuffer[P*m]);
                 }
+                top.snd--;
                 if (top.snd == 0) {
                     if (node.getChild(top.fst) == lastLeaf) {
                         lastLeaf--;
@@ -239,8 +243,6 @@ class ExternalHeap {
                     pop_heap(mergeHeap.begin(), mergeHeap.end(), cmp);
                     mergeHeap.pop_back();
                 } else {
-                    top.snd--;
-
                     if ((top.snd) % P == 0) {
                         storage->readPage(node.getChild(top.fst), (top.snd - 1) / P, &mergeBuffer[top.fst*P]);
                     }
@@ -255,7 +257,7 @@ class ExternalHeap {
 
             for (int i = 0; i < mergeHeap.size(); i++) {
                 Pair<unsigned int, unsigned int> pair = mergeHeap[i];
-                //printf("Size of node %d: %d\n", pair.fst, pair.snd);
+                //fprintf(stderr, "Size of node %d: %d\n", pair.fst, pair.snd);
                 node.setSizeOf(pair.fst, pair.snd);
             }
             mergeHeap.clear();
@@ -299,6 +301,7 @@ class ExternalHeap {
 		}
 
 		void insert(E e) {
+            fprintf(stderr, "inserting %d\n", e);
 			insertBuffer.push_back(e);
 			push_heap(insertBuffer.begin(), insertBuffer.end());
 			if (insertBuffer.size() == P * m) emptyInsertBuffer();
@@ -319,12 +322,12 @@ class ExternalHeap {
 			} else {
 				E e1 = insertBuffer[0];
 				E e2 = rootPageBuffer[(rootSize - 1) % P];
-				//printf("RootPageBuffer:");
+				//fprintf(stderr, "RootPageBuffer:");
 				//for (int i = 0; i < P; i++) {
-				//	printf(" %d", rootPageBuffer[i]);
+				//	fprintf(stderr, " %d", rootPageBuffer[i]);
 				//}
-				//printf("\n");
-				//printf("ib[0]: %d, pb[0]: %d\n", e1, e2);
+				//fprintf(stderr, "\n");
+				//fprintf(stderr, "ib[0]: %d, pb[0]: %d\n", e1, e2);
 				if (e1 > e2) {
 					res = e1;
 					pop_heap(insertBuffer.begin(), insertBuffer.end());
@@ -335,8 +338,7 @@ class ExternalHeap {
 				}
 			}
 
-
-			if (rootSize % P == 0) {
+			if (rootSize % P == 0 && rootSize != 0) {
                 vector<E> prev(rootPageBuffer, rootPageBuffer+P);
 
 				storage->readPage(0, rootSize / P - 1, rootPageBuffer);
@@ -348,9 +350,7 @@ class ExternalHeap {
                 }
             }
             if (rootSize < P * m / 2) {
-                //printf("rootSize %d\n", rootSize);
                 rebalance(0, &rootSize);
-                //printf("rootSize %d\n", rootSize);
             }
 
 			return res;
