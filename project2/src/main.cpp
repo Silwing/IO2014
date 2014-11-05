@@ -19,6 +19,8 @@ int main(int argc, char** argv) {
         SimpleStorage<int, 2, 4> storage("data");
         testSiftUpToRoot(&storage);
         testSiftUpToNode(&storage);
+        SimpleStorage<int, 2, 4> storage2("data2");
+        testRebalanceLeafCase2(&storage2);
         testSorting(&storage);
 	} catch (Exception e) {
 		printf("Exception thrown of type %s\n", e.getType());
