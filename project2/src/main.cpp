@@ -1,6 +1,6 @@
 #include <cstdio>
 #include <string>
-#include "SimpleStorage.hpp"
+#include "InMemoryStorage.hpp"
 #include "Exceptions.hpp"
 #include "Node.hpp"
 #include "ExternalHeap.hpp"
@@ -16,10 +16,12 @@
 
 int main(int argc, char** argv) {
 	try {
-        SimpleStorage<int, 2, 4> storage("data");
-        testSiftUpToRoot(&storage);
-        testSiftUpToNode(&storage);
-        testSorting(&storage);
+        InMemoryStorage<int, 4, 2> storage;
+        testUnalignedLastPage(&storage);
+        //testSiftUpToRoot(&storage);
+        //testSiftUpToNode(&storage);
+        //testSorting(&storage);
+        //testForUnalignedLastPage(&storage);
 	} catch (Exception e) {
 		printf("Exception thrown of type %s\n", e.getType());
 		printf("  %s\n", e.getMsg());
