@@ -337,14 +337,21 @@ class ExternalHeap {
 				}
 			}
 
-
 			if (rootSize % P == 0 && rootSize != 0) {
+                vector<E> prev(rootPageBuffer, rootPageBuffer+P);
+
 				storage->readPage(0, rootSize / P - 1, rootPageBuffer);
+
+                for(int i = 0; i < P; i++) {
+                    if(rootPageBuffer[i] > prev[P-1]) {
+                        printHeap(this, storage);
+                    }
+                }
             }
             if (rootSize < P * m / 2) {
                 rebalance(0, &rootSize);
             }
 
 			return res;
-		} 
+		}
 };
