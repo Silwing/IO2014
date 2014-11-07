@@ -43,7 +43,6 @@ void test(AbstractStorage<int, P, m>* storage, vector<int> input, vector<int> ou
     for (int i = 0; i < output.size(); i++) {
         int j = heap.deleteMax();
         if (j == output[i]) continue;
-        printHeap(&heap, storage);
         char* str = new char[100];
         sprintf(str, "Bad test. Got %d, expected %d", j, output[i]);
         throw new Exception(str, msg);
@@ -91,7 +90,7 @@ void testRebalanceLeafCase2(AbstractStorage<int, P, m>* storage) {
 template<int P, int m>
 void testSorting(AbstractStorage<int, P, m>* storage) {
     ExternalHeap<int, P, m> heap(storage);
-    int size = 500;
+    int size = 62;
     for (int i = 0; i < size; i++) {
         heap.insert(rand() % 1000);
     }
@@ -105,8 +104,7 @@ void testSorting(AbstractStorage<int, P, m>* storage) {
         }
         max = next;
     }
-    fprintf(stderr, "Sorting done. Throwing exception\n");
-    heap.deleteMax();
+    fprintf(stderr, "Sorting done.\n");
 }
 
 template<int P, int m>
@@ -126,16 +124,16 @@ void testForUnalignedLastPage(AbstractStorage<int, P, m>* storage) {
     }
 }
 
-template<int P, int m>
-void testUnalignedLastPage(AbstractStorage<int, P, m>* storage) {
-    ExternalHeap<int, P, m> heap(storage);
+void testUnalignedLastPage(AbstractStorage<int, 2, 4>* storage) {
+    ExternalHeap<int, 2, 4> heap(storage);
     
     
     vector<int> input;
-    for (int i = 0; i < P * m * (m + 2); i++)
+    for (int i = 0; i < 2 * 4 * 4; i++)
         input.push_back(100-i);
     
-    input[P*m*3+4] = 90;
+    input[2*4*2] = 92;
+    input[2*4*3] = 92;
     
     vector<int> output(input.begin(), input.end());
     sort(output.begin(), output.end());

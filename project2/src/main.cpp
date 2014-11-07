@@ -14,12 +14,11 @@
 
 int main(int argc, char** argv) {
 	//try {
-        InMemoryStorage<int, 4, 2> storage;
-        testSiftUpToRoot(&storage);
-        testSiftUpToNode(&storage);
-        
-        InMemoryStorage<int, 2, 4> storage2;
-        testRebalanceLeafCase2(&storage2);
+        InMemoryStorage<int, 2, 4> storage;
+        //testSiftUpToRoot(&storage);
+        //testSiftUpToNode(&storage);
+        testUnalignedLastPage(&storage);
+        testRebalanceLeafCase2(&storage);
         testSorting(&storage);
 	/*} catch (Exception e) {
 		printf("Exception thrown of type %s\n", e.getType());

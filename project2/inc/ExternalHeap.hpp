@@ -84,9 +84,6 @@ class ExternalHeap {
                 storage->writeNode(node);
                 storage->writeNode(parent);
                 storage->writeBlock(node, &mergeBuffer[P]);
-                storage->writeNode(node);
-                parent.setSizeOf(node.getSiblingNumber(), size);
-                storage->writeNode(parent);
                 return;
             }
 
@@ -145,26 +142,33 @@ class ExternalHeap {
                 storage->readBlock(node, &mergeBuffer[P]);
                 if (s > P*m) {
                     //Steal from last leaf
-                    if (x % P == 0) {
-                        for (int i = 0; i < m / 2; i++) {
-                            storage->readPage(leaf, x/P - m/2 + i , &mergeBuffer[P + *nodeSize + i * P]);
+                    unsigned int pleaseSteal = P*m - *nodeSize;
+                    if ((x - pleaseSteal) % P == 0) {
+                        for (int i = (x - pleaseSteal) / P; i < (x + P - 1) / P; i++) {
+                            storage->readPage(leaf, i , &mergeBuffer[P + *nodeSize + i * P]);
                         }
                     } else {
-                        for (int i = 0; i < m / 2 + 1; i++) {
-                            storage->readPage(leaf, (x + P -1)/P - m/2 - 1 + i , &mergeBuffer[P + *nodeSize + i * P]);
+                        unsigned int lastPage = ((x + P - 1)/P - 1);
+                        unsigned int firstPage = (x - pleaseSteal) / P;
+                        for (int i = firstPage, j = 0; i <= lastPage; i++, j++) {
+                            storage->readPage(leaf, i, &mergeBuffer[P + *nodeSize + j * P]);
                         }
                         //align
-                        for (int i = 0; i < P * m/2; i++) {
-                            mergeBuffer[P + *nodeSize + i] = mergeBuffer[P + *nodeSize + i + x % P];
+                        for (int i = 0; i < pleaseSteal; i++) {
+                            mergeBuffer[P + *nodeSize + i] = mergeBuffer[P + *nodeSize + i + (x - pleaseSteal) % P];
                         }
                     }
 
-                    *nodeSize += P*m/2;
+                    *nodeSize = P*m;
                     qsort(&mergeBuffer[P], *nodeSize, sizeof(E), compare);
-                    parent.setSizeOf(leaf.getSiblingNumber(), x - P*m/2);
+                    parent.setSizeOf(leaf.getSiblingNumber(), x - pleaseSteal);
                     storage->writeNode(parent);
                     if (nodeId == 0) {
                         storage->writeBlock(node, &mergeBuffer[P]);
+                        //root block is full. Just use the last page as rootPageBuffer
+                        for (int i = 0; i < P; i++) {
+                            rootPageBuffer[i] = mergeBuffer[P*m + i];
+                        }
                     } else {
                         siftUp(node, *nodeSize);
                     }
@@ -175,15 +179,16 @@ class ExternalHeap {
                     }
                     qsort(&mergeBuffer[P], s, sizeof(E), compare);
                     lastLeaf--;
+                    *nodeSize += x;
                     if (nodeId == 0) {
                         storage->writeBlock(node, &mergeBuffer[P]);
+                        //root block is not full - but when adding Pm/2, last page is still the same
                     } else {
+                        if (*nodeSize < P*m/2 && nodeId != lastLeaf)
+                            rebalance(node, nodeSize);
                         siftUp(node, s);
                     }
-                    *nodeSize += x;
-                    if (*nodeSize < P*m/2) {
-                        rebalance(node, nodeSize);
-                    }
+                    
                 }
                 return;
             }
@@ -210,6 +215,8 @@ class ExternalHeap {
             //compare function for heap
 			auto buf = mergeBuffer; //this is for use of closure
 			auto cmp = [buf](Pair<unsigned int, unsigned int> p1, Pair<unsigned int, unsigned int>p2) {
+                if (p1.snd == 0) return true; //these cases does not mean a lot
+                if (p2.snd == 0) return false;
 				E e1 = buf[p1.fst * P + (p1.snd - 1) % P];
 				E e2 = buf[p2.fst * P + (p2.snd - 1) % P];
                 return e1 < e2;
@@ -234,16 +241,12 @@ class ExternalHeap {
                     storage->writePage(nodeId, offset, &mergeBuffer[P*m]);
                 }
                 top.snd--;
-                if (top.snd == 0) {
-                    if (node.getChild(top.fst) == lastLeaf) {
-                        lastLeaf--;
-                    } else {
-                        throw new IllegalStateException("There should be plenty of elements to fetch from child");
-                    }
+                if (top.snd == 0 && node.getChild(top.fst) == lastLeaf) {
+                    lastLeaf--;
                     pop_heap(mergeHeap.begin(), mergeHeap.end(), cmp);
                     mergeHeap.pop_back();
                 } else {
-                    if ((top.snd) % P == 0) {
+                    if ((top.snd) % P == 0 && top.snd != 0) {
                         storage->readPage(node.getChild(top.fst), (top.snd - 1) / P, &mergeBuffer[top.fst*P]);
                     }
                     mergeHeap[0] = top;
@@ -265,21 +268,17 @@ class ExternalHeap {
             // if we just rebalanced the root we update rootPageBuffer
             // since we might have changed the root so the last page looks differently
             // not necessary since we expect P*m/2 to be an even amount of pages
-            /*if(nodeId == 0) {
-                printf("Updating rootPageBuffer: %d\n", rootSize/P-1);
-                printNode(node, storage, rootSize);
-				storage->readPage(0, (rootSize + P - 1) / P - 1, rootPageBuffer);
-            }*/
+            
             for (int i = 0; i < m; i++) {
                 unsigned int child = node.getChild(i);
-                if (child > lastLeaf) break;
+                if (child >= lastLeaf) break;
                 unsigned int childSize = node.getSizeOf(i);
                 if (childSize < P*m/2) {
                     rebalance(child, &childSize);
-                    node.setSizeOf(i, childSize);
+                    //node.setSizeOf(i, childSize);
                 }
             }
-            storage->writeNode(node);
+            //storage->writeNode(node);
 		}
 
 	public:
