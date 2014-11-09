@@ -90,7 +90,7 @@ void testRebalanceLeafCase2(AbstractStorage<int, P, m>* storage) {
 template<int P, int m>
 void testSorting(AbstractStorage<int, P, m>* storage) {
     ExternalHeap<int, P, m> heap(storage);
-    int size = 50;
+    int size = 100;
     for (int i = 0; i < size; i++) {
         heap.insert(rand() % 1000);
     }
