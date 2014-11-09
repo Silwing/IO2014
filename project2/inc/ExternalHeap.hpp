@@ -53,6 +53,7 @@ class ExternalHeap {
 			insertBuffer.clear();
 		}
 
+        // Precondtion: node's pages should be placed in mergeBuffer from index P and forward
 		void siftUp(Node<E, m> node, unsigned int size) {
             if (node.getId() == 0) throw new IllegalStateException("Root cannot be sifted up");
 			Node<E, m> parent = storage->readNode(node.getParent());
@@ -127,7 +128,7 @@ class ExternalHeap {
 
 		void rebalance(Node<E, m> node, unsigned int* nodeSize) {
             unsigned int nodeId = node.getId();
-            if (node.getId() == lastLeaf) {
+            if (nodeId == lastLeaf) {
                 if (*nodeSize == 0) lastLeaf--;
                 return;
             }
@@ -144,11 +145,14 @@ class ExternalHeap {
                     //Steal from last leaf
                     unsigned int pleaseSteal = P*m - *nodeSize;
                     if ((x - pleaseSteal) % P == 0) {
-                        for (int i = (x - pleaseSteal) / P; i < (x + P - 1) / P; i++) {
-                            storage->readPage(leaf, i , &mergeBuffer[P + *nodeSize + i * P]);
+                        int firstStealPage = (x - pleaseSteal)/P;
+                        int lastStealPage = (x - 1)/P;
+                        int offset = P + *nodeSize;
+                        for (int i = firstStealPage; i <= lastStealPage; i++) {
+                            storage->readPage(leaf, i , &mergeBuffer[offset + (i-firstStealPage) * P]);
                         }
                     } else {
-                        unsigned int lastPage = ((x + P - 1)/P - 1);
+                        unsigned int lastPage = (x - 1)/P;
                         unsigned int firstPage = (x - pleaseSteal) / P;
                         for (int i = firstPage, j = 0; i <= lastPage; i++, j++) {
                             storage->readPage(leaf, i, &mergeBuffer[P + *nodeSize + j * P]);
@@ -182,13 +186,15 @@ class ExternalHeap {
                     *nodeSize += x;
                     if (nodeId == 0) {
                         storage->writeBlock(node, &mergeBuffer[P]);
-                        //root block is not full - but when adding Pm/2, last page is still the same
+                        for(int i = 0; i < P; i++) {
+                            rootPageBuffer[i] = mergeBuffer[P+((*nodeSize - 1)/P)*P+i];
+                        }
                     } else {
                         if (*nodeSize < P*m/2 && nodeId != lastLeaf)
                             rebalance(node, nodeSize);
                         siftUp(node, s);
                     }
-                    
+
                 }
                 return;
             }
@@ -268,17 +274,24 @@ class ExternalHeap {
             // if we just rebalanced the root we update rootPageBuffer
             // since we might have changed the root so the last page looks differently
             // not necessary since we expect P*m/2 to be an even amount of pages
-            
+
             for (int i = 0; i < m; i++) {
                 unsigned int child = node.getChild(i);
-                if (child >= lastLeaf) break;
-                unsigned int childSize = node.getSizeOf(i);
-                if (childSize < P*m/2) {
-                    rebalance(child, &childSize);
-                    //node.setSizeOf(i, childSize);
+                if (child > lastLeaf) break;
+                if(child < lastLeaf) {
+                    unsigned int childSize = node.getSizeOf(i);
+                    if (childSize < P*m/2) {
+                        rebalance(child, &childSize);
+                        node.setSizeOf(i, childSize);
+                    }
+                } else {
+                    // LastLeaf might have been updated in the rebalancing process
+                    Node<E, m> updated = storage->readNode(node.getId());
+                    node.setSizeOf(i, updated.getSizeOf(i));
                 }
             }
-            //storage->writeNode(node);
+
+            storage->writeNode(node);
 		}
 
 	public:
@@ -300,7 +313,7 @@ class ExternalHeap {
 		}
 
 		void insert(E e) {
-            fprintf(stderr, "inserting %d\n", e);
+            //fprintf(stderr, "inserting %d\n", e);
 			insertBuffer.push_back(e);
 			push_heap(insertBuffer.begin(), insertBuffer.end());
 			if (insertBuffer.size() == P * m) emptyInsertBuffer();
@@ -338,15 +351,15 @@ class ExternalHeap {
 			}
 
 			if (rootSize % P == 0 && rootSize != 0) {
-                vector<E> prev(rootPageBuffer, rootPageBuffer+P);
+                //vector<E> prev(rootPageBuffer, rootPageBuffer+P);
 
 				storage->readPage(0, rootSize / P - 1, rootPageBuffer);
 
-                for(int i = 0; i < P; i++) {
+                /*for(int i = 0; i < P; i++) {
                     if(rootPageBuffer[i] > prev[P-1]) {
                         printHeap(this, storage);
                     }
-                }
+                }*/
             }
             if (rootSize < P * m / 2) {
                 rebalance(0, &rootSize);

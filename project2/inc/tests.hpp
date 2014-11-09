@@ -69,7 +69,7 @@ void testSiftUpToNode(AbstractStorage<int, P, m>* storage) {
 
     vector<int> output(input.begin(), input.end());
     reverse(output.begin(), output.end());
-        
+
     test(storage, input, output, "testSiftUpToNode and aligned last page");
 }
 
@@ -90,7 +90,7 @@ void testRebalanceLeafCase2(AbstractStorage<int, P, m>* storage) {
 template<int P, int m>
 void testSorting(AbstractStorage<int, P, m>* storage) {
     ExternalHeap<int, P, m> heap(storage);
-    int size = 62;
+    int size = 50;
     for (int i = 0; i < size; i++) {
         heap.insert(rand() % 1000);
     }
@@ -112,12 +112,12 @@ void testForUnalignedLastPage(AbstractStorage<int, P, m>* storage) {
     ExternalHeap<int, P, m> heap(storage);
     for (int i = 0; i < 1000000; i++) {
         int limit = rand() % 10 + 1;
-        printf("Inserting %d ints\n", limit);
+        //printf("Inserting %d ints\n", limit);
         for (int j = 0; j < limit; j++) {
             heap.insert(rand() % 10000);
         }
         limit = rand() % limit;
-        printf("Deleting %d ints\n", limit);
+        //printf("Deleting %d ints\n", limit);
         for (int j = 0; j < limit; j++) {
             heap.deleteMax();
         }
@@ -126,19 +126,19 @@ void testForUnalignedLastPage(AbstractStorage<int, P, m>* storage) {
 
 void testUnalignedLastPage(AbstractStorage<int, 2, 4>* storage) {
     ExternalHeap<int, 2, 4> heap(storage);
-    
-    
+
+
     vector<int> input;
     for (int i = 0; i < 2 * 4 * 4; i++)
         input.push_back(100-i);
-    
+
     input[2*4*2] = 92;
     input[2*4*3] = 92;
-    
+
     vector<int> output(input.begin(), input.end());
     sort(output.begin(), output.end());
     reverse(output.begin(), output.end());
-    
-    
+
+
     test(storage, input, output, "Unaligned last page");
 }

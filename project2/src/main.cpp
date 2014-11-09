@@ -13,19 +13,19 @@
 
 
 int main(int argc, char** argv) {
-	//try {
+	try {
         InMemoryStorage<int, 2, 4> storage;
         //testSiftUpToRoot(&storage);
         //testSiftUpToNode(&storage);
-        testUnalignedLastPage(&storage);
-        testRebalanceLeafCase2(&storage);
+        //testUnalignedLastPage(&storage);
+        //testRebalanceLeafCase2(&storage);
         testSorting(&storage);
-	/*} catch (Exception e) {
+	} catch (Exception e) {
 		printf("Exception thrown of type %s\n", e.getType());
 		printf("  %s\n", e.getMsg());
 	} catch (Exception* e) {
 		printf("Exception thrown of type %s\n", e->getType());
 		printf("  %s\n", e->getMsg());
 		delete e;
-	}*/
+	}
 }
