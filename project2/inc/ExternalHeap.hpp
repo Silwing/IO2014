@@ -12,6 +12,8 @@
 
 using namespace std;
 
+extern int step;
+
 template <typename E, int P, int m>
 class ExternalHeap {
 	private:
@@ -129,6 +131,9 @@ class ExternalHeap {
         }
 
 		unsigned int rebalance(Node<E, m> node, unsigned int nodeSize) {
+            if (step == 4) {
+                
+            }
             unsigned int nodeId = node.getId();
             if (nodeId == lastLeaf) {
                 if (nodeSize == 0) lastLeaf--;
@@ -289,8 +294,7 @@ class ExternalHeap {
                         if(node.getId() == 1 && i == 3) {
                             int test = 0;
                         }
-                        unsigned int newChildSize = rebalance(child, childSize);
-                        node.setSizeOf(i, newChildSize);
+                        rebalance(child, childSize);
                     }
                 } else {
                     // LastLeaf might have been updated in the rebalancing process
@@ -372,6 +376,7 @@ class ExternalHeap {
             }
             if (rootSize < P * m / 2) {
                 rootSize = rebalance(0, rootSize);
+                printHeapToFile(this, storage);
             }
 
 			return res;

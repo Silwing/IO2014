@@ -1,0 +1,61 @@
+digraph H {
+"0" [
+  label = "Node 0 | 157, 165, 169, 188, 194, 195, 196 "
+  shape="record"
+];
+"0" -> "1"
+"1" [
+  label = "Node 1 | 1, 24, 42, 73, 91, 123 "
+  shape="record"
+];
+"1" -> "5"
+"5" [
+  label = "Node 5 | 1, 24, 42 "
+  shape="record"
+];
+"1" -> "6"
+"6" [
+  label = "Node 6 | 1, 24 "
+  shape="record"
+];
+"1" -> "7"
+"7" [
+  label = "Node 7 | 24, 123, 124, 188, 196 "
+  shape="record"
+];
+"1" -> "8"
+"8" [
+  label = "Node 8 | 228, 298 "
+  shape="record"
+];
+"0" -> "2"
+"2" [
+  label = "Node 2 | 13, 63, 94, 105, 115, 149 "
+  shape="record"
+];
+"2" -> "9"
+"9" [
+  label = "Node 9 | 13, 63, 157, 169, 303, 327, 425 "
+  shape="record"
+];
+"2" -> "10"
+"10" [
+  label = "Node 10 | 94, 105, 115, 195, 404 "
+  shape="record"
+];
+"2" -> "11"
+"11" [
+  label = "Node 11 | 123, 188, 298 "
+  shape="record"
+];
+"0" -> "3"
+"3" [
+  label = "Node 3 | 97, 99, 124, 153 "
+  shape="record"
+];
+"0" -> "4"
+"4" [
+  label = "Node 4 | 94, 105, 115, 149 "
+  shape="record"
+];
+}

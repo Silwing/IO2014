@@ -1,17 +1,36 @@
+#pragma once
 #include "AbstractStorage.hpp"
 #include "ExternalHeap.hpp"
 #include "Exceptions.hpp"
+#include <cstdio>
 #include <vector>
 
+int step;
+
 template<int P, int m>
-void printHeap(ExternalHeap<int, P, m>* heap, AbstractStorage<int, P, m>* storage) {
-    printf("digraph H {\n");
-    printNode(storage->readNode(0), storage, heap->getRootSize());
-    printf("}\n");
+void printHeapToFile(ExternalHeap<int, P, m>* heap, AbstractStorage<int, P, m>* storage) {
+    string path = "graphs/graph_" + to_string(step++) + ".dot";
+    printf("Printing to %s\n", path.c_str());
+    FILE* file = fopen(path.c_str(), "w+");
+    printHeapToFile(file, heap, storage);
+    fclose(file);
 }
 
 template<int P, int m>
-void printNode(Node<int, m> node, AbstractStorage<int, P, m>* storage, int nodeSize) {
+void printHeap(ExternalHeap<int, P, m>* heap, AbstractStorage<int, P, m>* storage) {
+    printHeapToFile(stderr, heap, storage);
+}
+
+
+template<int P, int m>
+void printHeapToFile(FILE* file, ExternalHeap<int, P, m>* heap, AbstractStorage<int, P, m>* storage) {
+    fprintf(file, "digraph H {\n");
+    printNodeToFile(file, storage->readNode(0), storage, heap->getRootSize());
+    fprintf(file, "}\n");
+}
+
+template<int P, int m>
+void printNodeToFile(FILE* file, Node<int, m> node, AbstractStorage<int, P, m>* storage, int nodeSize) {
     int buf[P*m];
     storage->readBlock(node, buf);
     string buffer = to_string(buf[0]);
@@ -19,14 +38,14 @@ void printNode(Node<int, m> node, AbstractStorage<int, P, m>* storage, int nodeS
         buffer += ", " + to_string(buf[i]);
     }
 
-    printf("\"%d\" [\n  label = \"Node %d | %s \"\n  shape=\"record\"\n];\n", node.getId(), node.getId(), buffer.c_str());
+    fprintf(file, "\"%d\" [\n  label = \"Node %d | %s \"\n  shape=\"record\"\n];\n", node.getId(), node.getId(), buffer.c_str());
 
     for (int i = 0; i < m; i++) {
         unsigned int s = node.getSizeOf(i);
         if (s > 0) {
             Node<int, m> child = storage->readNode(node.getChild(i));
-            printf("\"%d\" -> \"%d\"\n", node.getId(), child.getId());
-            printNode(child, storage, s);
+            fprintf(file, "\"%d\" -> \"%d\"\n", node.getId(), child.getId());
+            printNodeToFile(file, child, storage, s);
         }
     }
 }
