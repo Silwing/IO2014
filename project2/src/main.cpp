@@ -13,19 +13,31 @@
 
 
 int main(int argc, char** argv) {
-	try {
+	//try {
         InMemoryStorage<int, 2, 4> storage;
         //testSiftUpToRoot(&storage);
         //testSiftUpToNode(&storage);
         //testUnalignedLastPage(&storage);
         //testRebalanceLeafCase2(&storage);
-        testSorting(&storage);
-	} catch (Exception e) {
+        int size = 300;
+        for(int i = 2; i < size; i++) {
+            try {
+                if(i == 114) {
+
+                }
+                testSorting(&storage, i);
+            } catch(Exception* e) {
+                printf("Sorting %d numbers failed with exception of type %s: %s\n", i, e->getType(), e->getMsg());
+            }
+        }
+        printf("Sorted up to %d numbers.", size);
+
+	/*} catch (Exception e) {
 		printf("Exception thrown of type %s\n", e.getType());
 		printf("  %s\n", e.getMsg());
 	} catch (Exception* e) {
 		printf("Exception thrown of type %s\n", e->getType());
 		printf("  %s\n", e->getMsg());
 		delete e;
-	}
+	}*/
 }
