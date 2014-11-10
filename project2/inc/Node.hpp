@@ -8,43 +8,54 @@ class Node {
 	private:
 		unsigned int id;
 		unsigned int childrenSizes[m];
-		
+		unsigned int nodeSize;
+
 	public:
 		Node() {
 			for (int i = 0; i < m; i++) {
 				childrenSizes[i] = 0;
 			}
+			nodeSize = 0;
 		}
-		
+
 		Node(unsigned int id) : id(id) {
 			for (int i = 0; i < m; i++) {
 				childrenSizes[i] = 0;
 			}
+			nodeSize = 0;
 		}
-		
+
 		~Node() {
 		}
-		
+
 		unsigned int getId() {
 			return id;
 		}
-		
+
 		unsigned int getParent() {
 			return (id - 1) / m;
 		}
-		
+
+		unsigned int getSize() {
+            return nodeSize;
+		}
+
+		void setSize(unsigned int s) {
+            nodeSize = s;
+		}
+
 		unsigned int getChild(unsigned int child) {
 			return id*m + 1 + child;
 		}
-		
+
 		unsigned int getSiblingNumber() {
 			return (id - 1) % m;
 		}
-		
+
 		unsigned int getSizeOf(unsigned int siblingNumber) {
 			return childrenSizes[siblingNumber];
 		}
-		
+
 		void setSizeOf(unsigned int siblingNumber, unsigned int size) {
 			if (siblingNumber >= m) {
 				throw new IllegalArgumentException("Bad argument for Node::setSizeOf");

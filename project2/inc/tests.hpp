@@ -107,9 +107,8 @@ void testRebalanceLeafCase2(AbstractStorage<int, P, m>* storage) {
 }
 
 template<int P, int m>
-void testSorting(AbstractStorage<int, P, m>* storage) {
+void testSorting(AbstractStorage<int, P, m>* storage, int size) {
     ExternalHeap<int, P, m> heap(storage);
-    int size = 100;
     for (int i = 0; i < size; i++) {
         heap.insert(rand() % 1000);
     }
@@ -117,13 +116,13 @@ void testSorting(AbstractStorage<int, P, m>* storage) {
     for (int i = 1; i < size; i++) {
         int next = heap.deleteMax();
         if (next > max) {
-            printf("max: %d | next: %d\n", max, next);
-            printHeap(&heap, storage);
+            //printf("max: %d | next: %d\n", max, next);
+            //printHeap(&heap, storage);
             throw new Exception("BadTestResult", "is not sorted");
         }
         max = next;
     }
-    fprintf(stderr, "Sorting done.\n");
+    //fprintf(stderr, "Sorting done.\n");
 }
 
 template<int P, int m>
